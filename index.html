@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tatian.app | Projects & Portfolio</title>
+    <style>
+        :root {
+            --bg-color: #0f111a;
+            --card-bg: #1e2130;
+            --card-hover: #262a3d;
+            --text-primary: #f8f9fa;
+            --text-secondary: #adb5bd;
+            --accent-color: #6366f1;
+            --accent-hover: #818cf8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            margin-top: 2rem;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background-color: var(--card-hover);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card ul {
+            list-style: none;
+        }
+
+        .card ul li {
+            margin-bottom: 1rem;
+        }
+
+        .card ul li a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            transition: color 0.2s;
+        }
+
+        .card ul li a:hover {
+            color: var(--accent-color);
+        }
+
+        .card ul li p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--accent-color);
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Simple Icons using Emojis for zero-dependency */
+        .icon { font-size: 1.2em; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Tatian.app</h1>
+            <p>Welcome to my personal hub for apps, games, code, and photography.</p>
+        </header>
+
+        <main class="grid">
+            
+            <section class="card">
+                <h2><span class="icon">📱</span> Apps</h2>
+                <ul>
+                    <li>
+                        <a href="https://anchor.tatian.app" target="_blank">Anchor <span class="badge">Web</span></a>
+                        <p>Your personal assistant, accessible anywhere.</p>
+                    </li>
+                    <li>
+                        <a href="#" target="_blank">Nature Sounds TY <span class="badge">iOS</span></a>
+                        <p>Relaxing ambient soundscapes for focus and sleep.</p>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2><span class="icon">🎮</span> Games</h2>
+                <ul>
+                    <li>
+                        <a href="https://depths.tatian.app" target="_blank">Depths of the Unknown <span class="badge">Play Now</span></a>
+                        <p>Dive into a mysterious adventure.</p>
+                    </li>
+                    <li>
+                        <a href="#" target="_blank">multicolor-bitsy</a>
+                        <p>A colorful, retro-style Bitsy game experience.</p>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2><span class="icon">💻</span> Coding & AI</h2>
+                <ul>
+                    <li>
+                        <a href="#" target="_blank">AmazonPriceDrop <span class="badge">Chrome Ext.</span></a>
+                        <p>Track Amazon prices and get alerts on drops.</p>
+                    </li>
+                    <li>
+                        <a href="#">Custom Chat Bots</a>
+                        <p>Specialized AI Gems tailored for specific tasks and fun.</p>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2><span class="icon">📸</span> Photography</h2>
+                <ul>
+                    <li>
+                        <a href="#" target="_blank">iCloud Albums</a>
+                        <p>Shared moments and curated collections straight from my camera roll.</p>
+                    </li>
+                    <li>
+                        <a href="#">Manual Uploads</a>
+                        <p>High-resolution shots and selected gallery features.</p>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="card">
+                <h2><span class="icon">📝</span> Personal</h2>
+                <ul>
+                    <li>
+                        <a href="#">The Bucket List</a>
+                        <p>Goals, adventures, and milestones I'm working towards.</p>
+                    </li>
+                </ul>
+            </section>
+
+        </main>
+
+        <footer>
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> Tatian.app. All rights reserved.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
