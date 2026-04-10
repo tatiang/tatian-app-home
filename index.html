@@ -317,6 +317,46 @@
         }
 
 
+        /* ═══ TABS ════════════════════════════════════════════════════ */
+
+        .tabs-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            font-family: 'Figtree', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--ink-mid);
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: var(--teal-bg);
+            color: var(--teal);
+            border-color: rgba(7,113,135,0.2);
+        }
+
+        .tab-btn.active {
+            background: var(--teal);
+            color: #fff;
+            border-color: var(--teal);
+            box-shadow: 0 2px 8px rgba(7,113,135,0.25);
+        }
+
+        .card[hidden] { display: none !important; }
+
+
         /* ═══ RESPONSIVE ══════════════════════════════════════════════ */
 
         @media (max-width: 1024px) {
@@ -348,10 +388,19 @@
 
 <!-- ══════════════════════════════ CARDS -->
 <main>
+    <div class="tabs-bar" role="tablist" aria-label="Sections">
+        <button class="tab-btn active" role="tab" aria-selected="true"  data-tab="all">All</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-tab="Games">Games</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-tab="Apps">Apps</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-tab="AI &amp; Bots">AI &amp; Bots</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-tab="Photography">Photography</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-tab="Bucket List">Bucket List</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-tab="Coding">Coding</button>
+    </div>
     <div class="bento">
 
         <!-- GAMES -->
-        <div class="card card-teal c7 live"
+        <div class="card card-teal c7 live" data-category="Games"
              onclick="window.open('https://depths.tatian.app','_blank')">
             <span class="card-cat">
                 <span class="cat-pip" style="background:var(--teal)"></span>Games
@@ -367,7 +416,7 @@
             <a class="card-arrow" href="https://depths.tatian.app" target="_blank" rel="noopener">↗</a>
         </div>
 
-        <div class="card card-mauve c5">
+        <div class="card card-mauve c5" data-category="Games">
             <span class="card-cat">
                 <span class="cat-pip" style="background:var(--mauve)"></span>Games
             </span>
@@ -380,7 +429,7 @@
         </div>
 
         <!-- APPS -->
-        <div class="card card-teal c5 live"
+        <div class="card card-teal c5 live" data-category="Apps"
              onclick="window.open('https://anchor.tatian.app','_blank')">
             <span class="card-cat">
                 <span class="cat-pip" style="background:var(--teal)"></span>Apps
@@ -396,7 +445,7 @@
             <a class="card-arrow" href="https://anchor.tatian.app" target="_blank" rel="noopener">↗</a>
         </div>
 
-        <div class="card card-green c4">
+        <div class="card card-green c4" data-category="Apps">
             <span class="card-cat">
                 <span class="cat-pip" style="background:#5aaa60"></span>Apps
             </span>
@@ -408,7 +457,7 @@
             <p class="card-desc">Relaxing ambient soundscapes for focus, meditation, and sleep.</p>
         </div>
 
-        <div class="card card-mauve c3">
+        <div class="card card-mauve c3" data-category="AI &amp; Bots">
             <span class="card-cat">
                 <span class="cat-pip" style="background:var(--mauve)"></span>AI &amp; Bots
             </span>
@@ -421,7 +470,7 @@
         </div>
 
         <!-- PHOTOS -->
-        <div class="card c6">
+        <div class="card c6" data-category="Photography">
             <span class="card-cat">
                 <span class="cat-pip" style="background:#5aaa60"></span>Photography
             </span>
@@ -433,7 +482,7 @@
             <p class="card-desc">Curated collections and shared moments from my camera roll.</p>
         </div>
 
-        <div class="card c6">
+        <div class="card c6" data-category="Photography">
             <span class="card-cat">
                 <span class="cat-pip" style="background:#5aaa60"></span>Photography
             </span>
@@ -446,7 +495,7 @@
         </div>
 
         <!-- BUCKET + CODING -->
-        <div class="card c4">
+        <div class="card c4" data-category="Bucket List">
             <span class="card-cat">
                 <span class="cat-pip" style="background:var(--ink-dim)"></span>Bucket List
             </span>
@@ -458,7 +507,7 @@
             <p class="card-desc">Goals, adventures, and milestones I'm chasing down.</p>
         </div>
 
-        <div class="card c8">
+        <div class="card c8" data-category="Coding">
             <span class="card-cat">
                 <span class="cat-pip" style="background:var(--mauve)"></span>Coding
             </span>
@@ -482,6 +531,26 @@
 
 <script>
     document.getElementById('yr').textContent = new Date().getFullYear();
+
+    const tabs = document.querySelectorAll('.tab-btn');
+    const cards = document.querySelectorAll('.card[data-category]');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+
+            const selected = tab.dataset.tab;
+            cards.forEach(card => {
+                if (selected === 'all' || card.dataset.category === selected) {
+                    card.removeAttribute('hidden');
+                } else {
+                    card.setAttribute('hidden', '');
+                }
+            });
+        });
+    });
 </script>
 
 </body>
