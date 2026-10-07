@@ -395,6 +395,7 @@
         <button class="tab-btn"        role="tab" aria-selected="false" data-tab="AI &amp; Bots">AI &amp; Bots</button>
         <button class="tab-btn"        role="tab" aria-selected="false" data-tab="Photography">Photography</button>
         <button class="tab-btn"        role="tab" aria-selected="false" data-tab="Bucket List">Bucket List</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" data-tab="Reading">Reading</button>
         <button class="tab-btn"        role="tab" aria-selected="false" data-tab="Coding">Coding</button>
     </div>
     <div class="bento">
@@ -544,6 +545,23 @@
                 <span class="badge b-soon">Soon</span>
             </div>
             <p class="card-desc">Specialized AI chatbots for specific tasks and conversations.</p>
+        </div>
+
+        <!-- READING -->
+        <div class="card card-green c7 live" data-category="Reading"
+             onclick="if (!event.target.closest('a')) window.open('/nature-reads.html','_self')">
+            <span class="card-cat">
+                <span class="cat-pip" style="background:#5aaa60"></span>Reading
+            </span>
+            <span class="card-icon" aria-hidden="true">🌲</span>
+            <div class="card-top">
+                <div class="card-name">
+                    <a href="/nature-reads.html">Saturday Nature Reads</a>
+                </div>
+                <span class="badge b-ios">9 selections</span>
+            </div>
+            <p class="card-desc">A weekly trail of long-form writing about walking, wild places, contemplative travel, folklore, and ecological wonder.</p>
+            <a class="card-arrow" href="/nature-reads.html" aria-label="Open Saturday Nature Reads">→</a>
         </div>
 
         <!-- PHOTOS -->
