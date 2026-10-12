@@ -25,3 +25,55 @@ Optimized using cwebp at quality 80–82. Original project icons/characters abov
 ## Collection illustrations (v3.01)
 
 `collection-apps.svg`, `collection-games.svg`, `collection-ai.svg`, `collection-photography.svg`, `collection-coding.svg`, and `collection-bucket.svg` are original decorative vector illustrations created for the project index. They echo the cobalt, coral and sage palette. Existing One Step/game images and fern artwork are reused for their matching cards. The category label remains readable independently of the image. No third-party assets or dependencies were added.
+
+## Personal artwork (v3.02)
+
+Created with the built-in image-generation tool on October 12, 2026. Decorative conceptual illustrations, not personal photographs, app screenshots, accurate maps or depictions of healing rituals. Optimized locally with cwebp (hero 1440px/800px; cards 720px). Original assets retained.
+
+### hero
+
+Asset: `personal-world-v3.02.webp` and `personal-world-small-v3.02.webp`
+
+Prompt: Use case: stylized-concept. Asset: tatian.app personal portfolio hero, landscape 3:2. Create an exquisite tactile editorial 3D still life on warm ivory #f4f1e9 seamless background, cobalt, coral and sage accents, soft real shadows. Personal creative world: open poetry notebook and fountain pen, camera with macro lens beside a beautifully detailed large frangipani flower, sculptural stage microphone, small soccer ball, balanced meditation stones with subtle ripple motif, woven palm floral tray and small bronze gong respectfully evoking Balinese culture, tiny microcontroller circuit board and colorful interlocking coding blocks/maker objects. Coherent composed still life with flower/camera/notebook as focal cluster and smaller supporting objects, not a scattered icon grid. Right-weighted composition for website text at left, generous empty leftmost 20%, all objects within frame, beautiful materials and sunlight. No text, logos, invented ritual, people, generic blue knot, watermark. Premium art direction, playful curiosity and calm.
+
+### anchor
+
+Asset: `project-anchor-v3.02.webp`
+
+Prompt: Use case: stylized-concept. Asset: wide website project thumbnail, landscape 3:2. A beautiful cobalt ceramic anchor resting beside three neat ivory task tiles and a small coral compass, evoking a calm personal assistant. Premium tactile editorial 3D illustration, handmade ceramic/paper/wood feel, subtle realistic texture, warm soft studio light and gentle shadows. Palette ivory, cobalt blue, coral and sage. Seamless pale ivory or softly tinted background. Single centered compact composition with generous empty margins all sides; objects occupy middle 65% width and 65% height for a wide thumbnail crop. No text, no logos, no UI, no watermark, no abstract blue interlocking loops. Visually clear at small size.
+
+### neurolist
+
+Asset: `project-neurolist-v3.02.webp`
+
+Prompt: Use case: stylized-concept. Asset: wide website project thumbnail, landscape 3:2. A playful miniature staircase made of five ivory and cobalt blocks with one coral ball progressing up them, a few blank task cards nearby, representing breaking tasks into achievable steps. Premium tactile editorial 3D illustration, handmade ceramic/paper/wood feel, subtle realistic texture, warm soft studio light and gentle shadows. Palette ivory, cobalt blue, coral and sage. Seamless pale ivory or softly tinted background. Single centered compact composition with generous empty margins all sides; objects occupy middle 65% width and 65% height for a wide thumbnail crop. No text, no logos, no UI, no watermark, no abstract blue interlocking loops. Visually clear at small size.
+
+### umami
+
+Asset: `project-umami-v3.02.webp`
+
+Prompt: Use case: stylized-concept. Asset: wide website project thumbnail, landscape 3:2. An appetizing sculptural still life of ripe tomato, basil, pasta curl, small olive oil bottle and an ivory recipe card with no lettering, warm culinary textures. Premium tactile editorial 3D illustration, handmade ceramic/paper/wood feel, subtle realistic texture, warm soft studio light and gentle shadows. Palette ivory, cobalt blue, coral and sage. Seamless pale ivory or softly tinted background. Single centered compact composition with generous empty margins all sides; objects occupy middle 65% width and 65% height for a wide thumbnail crop. No text, no logos, no UI, no watermark, no abstract blue interlocking loops. Visually clear at small size.
+
+### nature-sounds
+
+Asset: `project-nature-sounds-v3.02.webp`
+
+Prompt: Use case: stylized-concept. Asset: wide website project thumbnail, landscape 3:2. A peaceful miniature forest island with moss, ferns, smooth river rocks and a tiny waterfall into a clear pool, gentle concentric water ripples representing ambient sound. Premium tactile editorial 3D illustration, handmade ceramic/paper/wood feel, subtle realistic texture, warm soft studio light and gentle shadows. Palette ivory, cobalt blue, coral and sage. Seamless pale ivory or softly tinted background. Single centered compact composition with generous empty margins all sides; objects occupy middle 65% width and 65% height for a wide thumbnail crop. No text, no logos, no UI, no watermark, no abstract blue interlocking loops. Visually clear at small size.
+
+### bay-atlas
+
+Asset: `project-bay-atlas-v3.02.webp`
+
+Prompt: Use case: stylized-concept. Asset: wide website project thumbnail, landscape 3:2. A beautiful miniature topographic relief of a curved bay, blue water, sage hills, tiny clustered wooden houses and connecting bridges, representing Bay Area settlement geography. Conceptual not a factual labeled map. Premium tactile editorial 3D illustration, handmade ceramic/paper/wood feel, subtle realistic texture, warm soft studio light and gentle shadows. Palette ivory, cobalt blue, coral and sage. Seamless pale ivory or softly tinted background. Single centered compact composition with generous empty margins all sides; objects occupy middle 65% width and 65% height for a wide thumbnail crop. No text, no logos, no UI, no watermark, no abstract blue interlocking loops. Visually clear at small size.
+
+### ride-smart
+
+Asset: `project-ride-smart-v3.02.webp`
+
+Prompt: Use case: stylized-concept. Asset: wide website project thumbnail, landscape 3:2. A miniature green and silver passenger train on curving rails passing through gentle northern California sage hills with a simple small station, inviting transit planning. Premium tactile editorial 3D illustration, handmade ceramic/paper/wood feel, subtle realistic texture, warm soft studio light and gentle shadows. Palette ivory, cobalt blue, coral and sage. Seamless pale ivory or softly tinted background. Single centered compact composition with generous empty margins all sides; objects occupy middle 65% width and 65% height for a wide thumbnail crop. No text, no logos, no UI, no watermark, no abstract blue interlocking loops. Visually clear at small size.
+
+### family-trip
+
+Asset: `project-family-trip-v3.02.webp`
+
+Prompt: Use case: stylized-concept. Asset: wide website project thumbnail, landscape 3:2. A warm travel still life with coral suitcase, folded blank map with winding blue route, tiny camera and three small colorful luggage tags, evoking shared family adventures. Premium tactile editorial 3D illustration, handmade ceramic/paper/wood feel, subtle realistic texture, warm soft studio light and gentle shadows. Palette ivory, cobalt blue, coral and sage. Seamless pale ivory or softly tinted background. Single centered compact composition with generous empty margins all sides; objects occupy middle 65% width and 65% height for a wide thumbnail crop. No text, no logos, no UI, no watermark, no abstract blue interlocking loops. Visually clear at small size.

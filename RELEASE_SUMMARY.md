@@ -1,3 +1,9 @@
+# Personal artwork — v3.02
+
+A new personal still life reflects Tatian’s creative interests. Seven app cards now have distinct project-specific illustrations. All images are locally served optimized WebP; the hero includes a smaller responsive variant. All 18 project records, links, privacy labels and existing interactions remain unchanged.
+
+Verified at 1440, 768, 390 and 320 pixels with preservation, behavior, portable-source and syntax checks passing. No dependencies, auth, Firestore, service-worker or hosting changes. Pending feature-branch review and merge.
+
 # Illustrated collection — v3.01
 
 The project index now follows the Curiosity Cabinet design with illustrated cards, soft category colors, cobalt accents and an integrated search/filter panel. The layout adapts from three columns to two and one. All 18 project records, links, private labels, dialogs and the reading archive are unchanged.
