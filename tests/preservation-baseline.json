@@ -1,0 +1,57 @@
+{
+  "description": "Pre-redesign v2.02 content snapshot: update intentionally when project content changes.",
+  "project_count": 18,
+  "project_links": [
+    "https://onestep.tatian.app",
+    "https://depths.tatian.app",
+    "https://anchor.tatian.app",
+    "https://neurolist.tatian.app",
+    "https://lunch-plan.web.app",
+    "#project-nature-sounds-ty",
+    "nature-reads.html",
+    "https://bay-area-settlement-atlas.tgleaf.chatgpt.site",
+    "https://ride-smart.tgleaf.chatgpt.site",
+    "https://family-trip-october-2026.tgleaf.chatgpt.site",
+    "#project-multicolor-bitsy",
+    "#project-custom-gems",
+    "#project-icloud-albums",
+    "#project-photo-galleries",
+    "#project-the-bucket-list",
+    "https://mbot-vr.vercel.app",
+    "#project-amazonpricedrop",
+    "https://mission-control.tatian.app"
+  ],
+  "categories": [
+    "Apps",
+    "Games",
+    "Apps",
+    "Apps",
+    "Apps",
+    "Apps",
+    "Reading",
+    "Apps",
+    "Apps",
+    "Apps",
+    "Games",
+    "AI & Bots",
+    "Photography",
+    "Photography",
+    "Bucket List",
+    "Coding",
+    "Coding",
+    "Coding"
+  ],
+  "sections": [
+    {
+      "start": "<div class=\"project-list\"",
+      "end": "<p class=\"index-note\"",
+      "sha256": "5de87adf70fbbec2d3a99afd06f8c84798fb8334ed975506ec4a7920c53ff482"
+    },
+    {
+      "start": "<div class=\"project-details wrap\">",
+      "end": "</main>",
+      "sha256": "87cb475b0f206d35ad60ad55714c967bd3c8ae1910d2e16e900a9a9bffef5748"
+    }
+  ],
+  "reading_sha256": "629c46392e6569fd53caefbc9b456ad63b2dff1272d54dad37b4b7f4685bdcbe"
+}
