@@ -16,7 +16,7 @@ function load(motionEnabled) {
   const html = readFileSync(resolve(root, 'index.html'), 'utf8');
   const projects = [...html.matchAll(/<article class="project [^"]*" data-category="([^"]*)">([\s\S]*?)<\/article>/g)]
     .map(m => element({dataset: {category: m[1].replace('&amp;', '&')}, textContent: m[2].replace(/<[^>]*>/g, ' ')}));
-  const filters = ['All','Apps','Games','AI & Bots','Photography','Reading','Coding','Bucket List'].map(category => element({dataset:{filter:category}}));
+  const filters = ['All','Apps','Games','AI & Bots','Photography','Reading','Coding','Storytelling','Bucket List'].map(category => element({dataset:{filter:category}}));
   const search = element(), count = element(), empty = element(), searchWrap = element(), filterbar = element();
   const hero = element({ getBoundingClientRect: () => ({left:0,top:0,width:100,height:100}) });
   const art = element({style:{removeProperty(name){delete this[name];}}});
@@ -37,7 +37,7 @@ function load(motionEnabled) {
 }
 test('category and search combine, clear and announce empty results', () => {
   const page = load(false);
-  assert.equal(page.count.textContent, '18 projects');
+  assert.equal(page.count.textContent, '19 projects');
   assert.equal(page.searchWrap.hidden, false);
   page.search.value = 'ROBOT'; page.search.fire('input');
   assert.equal(page.count.textContent,'2 projects');
@@ -45,7 +45,7 @@ test('category and search combine, clear and announce empty results', () => {
   assert.equal(page.count.textContent,'0 projects'); assert.equal(page.empty.hidden,false);
   page.search.value=''; page.search.fire('input');
   assert.equal(page.count.textContent,'1 project'); assert.equal(page.empty.hidden,true);
-  page.filters[0].fire('click'); assert.equal(page.count.textContent,'18 projects');
+  page.filters[0].fire('click'); assert.equal(page.count.textContent,'19 projects');
 });
 test('reduced motion and coarse pointers never schedule motion', () => {
   const page = load(false);
@@ -61,4 +61,13 @@ test('pointer motion is bounded and resets when the preference changes', () => {
   const before=page.scheduled;
   page.hero.fire('pointermove',{clientX:0,clientY:100});
   assert.equal(page.scheduled,before);
+});
+
+test('Storytelling category finds the new index and combines with search', () => {
+  const page = load(false);
+  page.filters.find(x=>x.dataset.filter==='Storytelling').fire('click');
+  assert.equal(page.count.textContent,'1 project');
+  assert.equal(page.projects.filter(x=>!x.hidden)[0].dataset.category,'Storytelling');
+  page.search.value='robot'; page.search.fire('input');
+  assert.equal(page.count.textContent,'0 projects');
 });

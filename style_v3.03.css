@@ -1,0 +1,2 @@
+@import url('style_v3.02.css');
+.project[data-category="Storytelling"] { --card-tint:#eee9dd; --card-art:url('assets/storytelling.svg'); }

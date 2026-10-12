@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" fill="none">
+<ellipse cx="252" cy="278" rx="177" ry="15" fill="#dcdccf"/>
+<path d="M60 148C111 130 157 151 206 172V279C158 256 110 245 60 261Z" fill="#e3b78a"/>
+<path d="M206 172C255 151 301 130 352 148V261C302 245 254 256 206 279Z" fill="#b78059"/>
+<path d="M64 134C122 121 165 141 206 162V266C160 242 115 230 64 245Z" fill="#faf8f1" stroke="#bcc5af" stroke-width="2"/>
+<path d="M206 162C250 142 291 121 347 134V245C295 230 251 242 206 266Z" fill="#f0eadc" stroke="#bcc5af" stroke-width="2"/>
+<path d="M86 162C121 158 155 170 180 182M86 186C121 182 153 194 180 206M86 210C119 206 142 216 161 224" stroke="#9ba990" stroke-width="5" stroke-linecap="round"/>
+<rect x="304" y="37" width="57" height="114" rx="28.5" fill="#344de4"/>
+<path d="M318 62H347M316 77H349M316 92H349M318 107H347" stroke="#a4b2ff" stroke-width="5" stroke-linecap="round"/>
+<path d="M287 113V125C287 151 305 169 333 169C361 169 379 151 379 125V113M333 171V247M307 253H359" stroke="#273a36" stroke-width="9" stroke-linecap="round"/>
+<circle cx="109" cy="70" r="25" fill="#d78361"/>
+<path d="M391 61L407 48M399 86H419M389 111L404 123" stroke="#a6b996" stroke-width="5" stroke-linecap="round"/>
+</svg>
