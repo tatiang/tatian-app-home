@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="140" viewBox="0 0 260 140" fill="none"><defs>
+    <linearGradient id="blue" x1="65" y1="0" x2="185" y2="140" gradientUnits="userSpaceOnUse"><stop stop-color="#839aff" /><stop offset=".4" stop-color="#3557ff" /><stop offset="1" stop-color="#162c9f" /></linearGradient>
+    <linearGradient id="coral"><stop stop-color="#f5ba92" /><stop offset="1" stop-color="#c76c45" /></linearGradient>
+    <linearGradient id="green"><stop stop-color="#b7c5a6" /><stop offset="1" stop-color="#38634c" /></linearGradient>
+  </defs>
+  
+  <g><ellipse cx="137" cy="119" rx="73" ry="7" fill="#162c9f" opacity=".08" /><ellipse cx="111" cy="66" rx="29" ry="43" transform="rotate(-38 111 66)" stroke="url(#blue)" stroke-width="17" /><ellipse cx="152" cy="74" rx="29" ry="43" transform="rotate(38 152 74)" stroke="url(#blue)" stroke-width="17" /><path d="M108 37c-14 5-23 20-17 36" stroke="#c0cbff" stroke-width="3" stroke-linecap="round" /><circle cx="204" cy="33" r="13" fill="url(#coral)" /></g>
+  
+  </svg>

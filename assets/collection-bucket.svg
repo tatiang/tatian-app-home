@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="140" viewBox="0 0 260 140" fill="none"><defs>
+    <linearGradient id="blue" x1="65" y1="0" x2="185" y2="140" gradientUnits="userSpaceOnUse"><stop stop-color="#839aff" /><stop offset=".4" stop-color="#3557ff" /><stop offset="1" stop-color="#162c9f" /></linearGradient>
+    <linearGradient id="coral"><stop stop-color="#f5ba92" /><stop offset="1" stop-color="#c76c45" /></linearGradient>
+    <linearGradient id="green"><stop stop-color="#b7c5a6" /><stop offset="1" stop-color="#38634c" /></linearGradient>
+  </defs>
+  
+  <g><circle cx="183" cy="36" r="17" fill="url(#coral)" /><path d="m38 115 70-89 34 46 24-31 58 74z" fill="url(#green)" /><path d="m89 50 19-24 20 27-19-8z" fill="#eef0de" /><path d="M137 119c-61-15 46-24 5-45" stroke="#e9d6b3" stroke-width="5" stroke-linecap="round" /><path d="M38 122h186" stroke="#536950" /></g>
+</svg>

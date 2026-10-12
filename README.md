@@ -1,4 +1,4 @@
-# Tatian.app — Curiosity Cabinet v3.00
+# Tatian.app — Curiosity Cabinet v3.01
 
 A static personal portfolio with a sculptural cobalt hero, ivory editorial typography, an asymmetric project gallery, and a searchable collection. No framework, package installation, build step, analytics, remote fonts, or new service dependencies.
 
@@ -18,7 +18,8 @@ Open http://127.0.0.1:8765. Inspect at 1440px, 768px, 390px and 320px. Click “
 ## Source
 
 - `index.html`: homepage; all 18 original project records and destinations retained.
-- `style_v3.00.css`: new responsive design over the unchanged `style_v2.02.css` foundation.
+- `style_v3.01.css`: illustrated collection cards and integrated search/filter panel, extending the v3.00 homepage design.
+- `style_v3.00.css`: responsive homepage design over the unchanged `style_v2.02.css` foundation.
 - `app_v3.00.js`: category + text filtering, count, existing project dialogs, year and optional pointer motion.
 - `nature-reads.html`, `reading_v2.00.css`: unchanged 10-entry reading archive and filters.
 - `assets/`: self-hosted fonts, existing app/game assets and optimized generated editorial art. Prompts and provenance are in `assets/README.md`.
@@ -40,3 +41,5 @@ The One Step phone is a labeled illustrative view of the existing “Put the gre
 Local checks passed: JavaScript syntax, three behavior tests, preservation/static checks, desktop/tablet/phone browser inspection, eight category filters, combined search/empty results, keyboard dialog behavior, no-JS fallback and clean browser console. Reduced-motion logic is covered by behavior tests and CSS source review; OS preference switching was not browser-emulated.
 
 Changes are prepared on a feature branch for pull-request review. Production deployment is not implied by a successful local preview or push. No deployment workflow is added by this redesign.
+
+The collection uses lightweight decorative category SVGs and existing project imagery. It displays three columns on desktop, two on tablets and one below 541px; filtering removes hidden cards from the grid. Every card remains one native link with its original accessible name and destination.
