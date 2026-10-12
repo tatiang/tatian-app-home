@@ -14,7 +14,7 @@ Then visit `http://localhost:8000`. Review at 1440px, 768px, 390px, and 320px. T
 
 ## Source
 
-- `index.html`: homepage; all 17 listed projects retained.
+- `index.html`: homepage; 18 projects, including Mission Control at https://mission-control.tatian.app.
 - `style_v2.00.css`: responsive editorial layout and restrained hover motion.
 - `app_v2.00.js`: progressively enhanced category filters, count, and year.
 - `nature-reads.html`: existing 10-entry reading collection, with content and article links retained.
