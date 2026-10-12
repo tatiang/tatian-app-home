@@ -30,9 +30,9 @@
 .project-text { flex:1; margin-top:26px; margin-bottom:24px; }
 .project-text h3 { font:400 clamp(23px,2.3vw,31px)/1.12 var(--serif); letter-spacing:-.045em; margin-bottom:12px; overflow-wrap:anywhere; }
 .project-text p { font-size:13px; line-height:1.7; color:#58665d; margin:0; }
-.project-category { position:absolute; top:171px; left:25px; font:9px/1.6 var(--mono); text-transform:uppercase; letter-spacing:.1em; color:#43574b; margin:0; }
+.project-category { position:absolute; top:171px; left:25px; font:11px/1.6 var(--mono); text-transform:uppercase; letter-spacing:.1em; color:#43574b; margin:0; }
 .project-category::before { content:''; display:inline-block; width:5px; height:5px; margin:0 8px 1px 0; border-radius:50%; background:var(--cobalt); }
-.project-status { font:10px/1.5 var(--mono); text-align:left; padding-top:15px; padding-right:45px; border-top:1px solid #dce0d4; min-height:45px; display:flex; align-items:center; }
+.project-status { font:11px/1.5 var(--mono); text-align:left; padding-top:15px; padding-right:45px; border-top:1px solid #dce0d4; min-height:45px; display:flex; align-items:center; }
 .project-arrow,.is-private .project-arrow { position:absolute; bottom:23px; right:23px; width:35px; height:35px; border:1px solid #bdc7dc; border-radius:50%; display:grid; place-items:center; font-size:19px; color:#2948ce; background:#f2f3fa; }
 .is-private .project-status { color:#695546; }
 .is-private .project-status::before { content:''; display:inline-block; flex:none; width:6px; height:6px; border-radius:50%; background:#aa7450; margin-right:8px; }

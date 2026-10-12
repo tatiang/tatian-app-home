@@ -9,7 +9,7 @@ Before completion: verify three/two/one-column layouts at desktop/tablet/mobile,
 - [x] Verify correct remote, clean tree, and fresh branch from origin/main.
 - [x] Implement illustrated cards and integrated filter/search controls.
 - [x] Verify responsive layout and existing behavior.
-- [ ] Commit, push, PR and successful preview.
+- [x] Commit, push, PR #6 and successful Cloudflare preview.
 
 ## Decisions
 - Keep project content markup byte-for-byte; decorative art comes from CSS pseudo-elements and small category SVGs.
@@ -24,3 +24,6 @@ SVG view fragments rendered as the full sheet in the preview browser; use separa
 - Tab focus is visible; Enter filters; Escape closes details and restores card focus.
 - Privacy labels preserved; browser console has no warnings/errors.
 - Existing preservation, behavior and source-export tests pass. SVG XML and CSS asset references checked.
+
+## Review fix
+Restored 11px category/status text after automated review identified a legibility regression. User authorized PR #6 merge after this correction.
