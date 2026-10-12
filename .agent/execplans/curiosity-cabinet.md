@@ -17,7 +17,8 @@ Implement the approved ivory, cobalt, botanical and sculptural portfolio concept
 - [x] Read source and repository README; no repository AGENTS.md or PLANS.md present.
 - [x] Implement and optimize original hero artwork.
 - [x] Verify responsive visuals, interactions and preservation.
-- [ ] Commit, push, PR and deployment checks.
+- [x] Commit, push, PR and deployment checks: PR #5; Cloudflare preview successful for 0b23463.
+- [x] Address review feedback: portable preservation snapshot replaces origin/main dependency.
 
 ## Decision log
 - Keep existing static architecture and self-hosted fonts; add no dependencies.
@@ -34,3 +35,8 @@ Implement the approved ivory, cobalt, botanical and sculptural portfolio concept
 - Node behavior tests pass, including reduced-motion/coarse-pointer suppression and dynamic preference reset.
 - Browser console clean. Reading archive opens and is byte-for-byte unchanged.
 - A browser preview tab timed out during resizing; a fresh tab recovered and remaining checks passed.
+
+## Review follow-up
+- Automated review identified the verifier dependency on origin/main. Replaced it with a checked-in baseline so source archives and forks can run the same checks.
+- Follow-up commit will update PR #5; the latest GitHub check records deployment status.
+- Source-export verification passes with no .git directory; intentional link and reading-content mutations fail as expected.

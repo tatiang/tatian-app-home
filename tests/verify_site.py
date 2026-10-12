@@ -2,7 +2,8 @@
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlsplit
-import subprocess
+import json
+from hashlib import sha256
 
 ROOT = Path(__file__).resolve().parents[1]
 class Page(HTMLParser):
@@ -20,19 +21,18 @@ class Page(HTMLParser):
         if tag in ('img','script') and a.get('src'): self.assets.append(a['src'])
         if tag=='link' and a.get('href'): self.assets.append(a['href'])
 
-base = subprocess.check_output(['git','show','origin/main:index.html'],cwd=ROOT,text=True)
-old=Page(base); new=Page((ROOT/'index.html').read_text())
-assert len(new.projects)==18
-assert new.projects==old.projects, 'Project records or destinations changed'
-assert new.categories==old.categories
-# Preserve complete project descriptions and details, not merely their URLs.
-for start,end in [('<div class="project-list"','<p class="index-note"'),('<div class="project-details wrap">','</main>')]:
-    old_section=base[base.index(start):base.index(end,base.index(start))]
-    new_source=(ROOT/'index.html').read_text()
-    new_section=new_source[new_source.index(start):new_source.index(end,new_source.index(start))]
-    if start.startswith('<div class="project-list"'):
-        new_section=new_section.replace('    <p class="empty-state" hidden>No projects match. Try another search or category.</p>\n','')
-    assert new_section==old_section
+baseline = json.loads((ROOT/'tests/preservation-baseline.json').read_text())
+source = (ROOT/'index.html').read_text()
+new = Page(source)
+assert len(new.projects) == baseline['project_count']
+assert [link['href'] for link in new.projects] == baseline['project_links'], 'Project destinations changed'
+assert new.categories == baseline['categories']
+# Freeze descriptions and details as well as URLs, without requiring Git history.
+for section in baseline['sections']:
+    start, end = section['start'], section['end']
+    content = source[source.index(start):source.index(end, source.index(start))]
+    content = content.replace('    <p class="empty-state" hidden>No projects match. Try another search or category.</p>\n', '')
+    assert sha256(content.encode()).hexdigest() == section['sha256'], 'Preserved project content changed'
 for name in ['index.html','nature-reads.html']:
     page=Page((ROOT/name).read_text())
     assert len(page.ids)==len(set(page.ids)), f'Duplicate IDs in {name}'
@@ -42,7 +42,7 @@ for name in ['index.html','nature-reads.html']:
         if link.get('target')=='_blank': assert {'noopener','noreferrer'} <= set(link.get('rel','').split())
     for asset in page.assets:
         if not urlsplit(asset).scheme: assert (ROOT/asset).is_file(), asset
-assert (ROOT/'nature-reads.html').read_bytes()==subprocess.check_output(['git','show','origin/main:nature-reads.html'],cwd=ROOT)
+assert sha256((ROOT/'nature-reads.html').read_bytes()).hexdigest() == baseline['reading_sha256']
 for asset in ['curiosity-cabinet.webp','curiosity-cabinet-small.webp','fern-study.webp']:
     assert (ROOT/'assets'/asset).stat().st_size < 300_000, asset
 print('PASS: 18 project records/links/details preserved; reading archive unchanged; local assets, anchors, IDs, external-link safety and image budgets valid.')

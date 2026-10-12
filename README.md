@@ -9,6 +9,7 @@ python3 -m http.server 8765 --bind 127.0.0.1
 node --check app_v3.00.js
 node --test tests/behavior.test.cjs
 python3 tests/verify_site.py
+python3 tests/test_portable_verification.py
 git diff --check
 ```
 
@@ -21,7 +22,7 @@ Open http://127.0.0.1:8765. Inspect at 1440px, 768px, 390px and 320px. Click “
 - `app_v3.00.js`: category + text filtering, count, existing project dialogs, year and optional pointer motion.
 - `nature-reads.html`, `reading_v2.00.css`: unchanged 10-entry reading archive and filters.
 - `assets/`: self-hosted fonts, existing app/game assets and optimized generated editorial art. Prompts and provenance are in `assets/README.md`.
-- `tests/verify_site.py`: compares project records and reading archive with `origin/main`; validates anchors, IDs, assets, link safety and image budgets. Intended as a redesign preservation check against the pre-merge baseline.
+- `tests/verify_site.py`: compares project records and reading archive with the checked-in `tests/preservation-baseline.json`; validates anchors, IDs, assets, link safety and image budgets. Works in source archives and checkouts without remotes or Git history. Update the snapshot intentionally when project content changes.
 - `tests/behavior.test.cjs`: dependency-free tests of the shipped search/filter and motion enhancement.
 
 ## Accessibility and performance
