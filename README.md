@@ -14,7 +14,7 @@ Then visit `http://localhost:8000`. Review at 1440px, 768px, 390px, and 320px. T
 
 ## Source
 
-- `index.html`: homepage; all 16 existing projects retained.
+- `index.html`: homepage; all 17 listed projects retained.
 - `style_v2.00.css`: responsive editorial layout and restrained hover motion.
 - `app_v2.00.js`: progressively enhanced category filters, count, and year.
 - `nature-reads.html`: existing 10-entry reading collection, with content and article links retained.
@@ -42,7 +42,7 @@ Fraunces, DM Sans, and DM Mono are self-hosted; their SIL Open Font License noti
 Completed:
 - JavaScript syntax and CSS parsing.
 - All 8 category filters, selected states, and project counts.
-- All 16 project records; 3 private records have no links.
+- All 17 project records; 3 private records have no links.
 - Public project links, external-link safety, local assets and internal anchors.
 - All 10 reading entries and their article links unchanged; archive filters checked.
 - Narrow-screen headline sizing refined using the actual font metrics.
