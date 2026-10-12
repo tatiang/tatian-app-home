@@ -1,0 +1,15 @@
+/* Personal artwork, preserving the collection's content and interactions. */
+@import url('style_v3.01.css');
+.project-line[aria-labelledby="project-title-03"]::before { background-image:url("assets/project-anchor-v3.02.webp"); background-size:auto 100%; background-color:#faf4e9; }
+.project-line[aria-labelledby="project-title-04"]::before { background-image:url("assets/project-neurolist-v3.02.webp"); background-size:auto 100%; background-color:#faf4e9; }
+.project-line[aria-labelledby="project-title-05"]::before { background-image:url("assets/project-umami-v3.02.webp"); background-size:auto 100%; background-color:#faf4e9; }
+.project-line[aria-labelledby="project-title-06"]::before { background-image:url("assets/project-nature-sounds-v3.02.webp"); background-size:auto 100%; background-color:#faf4e9; }
+.project-line[aria-labelledby="project-title-08"]::before { background-image:url("assets/project-bay-atlas-v3.02.webp"); background-size:auto 100%; background-color:#faf4e9; }
+.project-line[aria-labelledby="project-title-09"]::before { background-image:url("assets/project-ride-smart-v3.02.webp"); background-size:auto 100%; background-color:#faf4e9; }
+.project-line[aria-labelledby="project-title-10"]::before { background-image:url("assets/project-family-trip-v3.02.webp"); background-size:auto 100%; background-color:#faf4e9; }
+.hero-art { bottom:48px; }
+.hero-art img { mask-image:linear-gradient(to right,transparent,black 15%,black 96%,transparent),linear-gradient(to bottom,transparent,black 5%,black 88%,transparent); mask-composite:intersect; }
+@media(max-width:760px) {
+  .hero-art { bottom:auto; }
+  .hero-art img { mask-image:linear-gradient(to bottom,transparent,black 4%,black 92%,transparent); mask-composite:add; }
+}

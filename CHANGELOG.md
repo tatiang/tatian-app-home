@@ -1,6 +1,11 @@
 # Changelog
 
-Oct 12, 2026 — 1:48 PM PT — pending — Keep project labels and private notices easy to read
+Oct 12, 2026 — 2:09 PM PT — pending — Give the portfolio personal and project-specific artwork
+
+- Replace seven repeated thumbnails with distinct project illustrations.
+- Reflect poetry, photography, storytelling, soccer, meditation, Balinese culture and making in the hero.
+
+Oct 12, 2026 — 1:48 PM PT — 19f78c5 — Keep project labels and private notices easy to read
 
 - Restore the 11px minimum for card categories and status labels at every screen size.
 
