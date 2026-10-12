@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="140" viewBox="0 0 260 140" fill="none"><defs>
+    <linearGradient id="blue" x1="65" y1="0" x2="185" y2="140" gradientUnits="userSpaceOnUse"><stop stop-color="#839aff" /><stop offset=".4" stop-color="#3557ff" /><stop offset="1" stop-color="#162c9f" /></linearGradient>
+    <linearGradient id="coral"><stop stop-color="#f5ba92" /><stop offset="1" stop-color="#c76c45" /></linearGradient>
+    <linearGradient id="green"><stop stop-color="#b7c5a6" /><stop offset="1" stop-color="#38634c" /></linearGradient>
+  </defs>
+  
+  <g><ellipse cx="130" cy="121" rx="79" ry="7" fill="#162c9f" opacity=".08" /><path d="m48 77 36-19 36 19-36 20z" fill="#8097ff" /><path d="m48 77 36 20v26l-36-20z" fill="#3659d9" /><path d="m84 97 36-20v26l-36 20z" fill="#1b3182" /><path d="m107 45 36-19 36 19-36 20z" fill="#8097ff" /><path d="m107 45 36 20v41l-36-20z" fill="#3659d9" /><path d="m143 65 36-20v41l-36 20z" fill="#1b3182" /><path d="m163 83 26-14 26 14-26 14z" fill="#e9b99a" /><path d="m163 83 26 14v23l-26-14z" fill="#c78365" /><path d="m189 97 26-14v23l-26 14z" fill="#945b4a" /><path d="m77 24 4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#c78365" /></g>
+  
+  </svg>

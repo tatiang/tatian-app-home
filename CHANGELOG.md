@@ -1,6 +1,15 @@
 # Changelog
 
-Oct 12, 2026 — 1:14 PM PT — pending — Make portfolio checks work in downloaded source copies
+Oct 12, 2026 — 1:48 PM PT — pending — Keep project labels and private notices easy to read
+
+- Restore the 11px minimum for card categories and status labels at every screen size.
+
+Oct 12, 2026 — 1:41 PM PT — 5819322 — Turn the project index into an illustrated collection
+
+- Add sculptural category artwork, ivory cards and cobalt navigation accents.
+- Integrate search and category filters into a single panel while preserving every project and link.
+
+Oct 12, 2026 — 1:14 PM PT — c9fe14b — Make portfolio checks work in downloaded source copies
 
 - Remove the verification script’s dependency on Git remotes and history.
 - Keep a local snapshot that verifies the original projects, links and reading archive.

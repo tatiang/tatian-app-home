@@ -1,3 +1,9 @@
+# Illustrated collection — v3.01
+
+The project index now follows the Curiosity Cabinet design with illustrated cards, soft category colors, cobalt accents and an integrated search/filter panel. The layout adapts from three columns to two and one. All 18 project records, links, private labels, dialogs and the reading archive are unchanged.
+
+Verified at 1440, 768, 390 and 320 pixels, including category/search reflow, empty results and keyboard focus/dialog return. No dependencies, auth, schema, service-worker or hosting changes. Pending feature-branch review and merge.
+
 # Curiosity Cabinet — v3.00
 
 Tatian.app gains a sculptural cobalt-and-botanical hero, oversized typography, an asymmetric selected-work gallery and a full-width nature reading feature. The collection now supports text search combined with its existing category filters.

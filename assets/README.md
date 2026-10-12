@@ -21,3 +21,7 @@ Hero prompt: "Generate a production website hero artwork ONLY, no typography or 
 Fern prompt: "Production website editorial botanical background, no text or typography. Wide landscape 3:2 macro nature photograph style of a fresh green fern frond with tiny dew drops, backlit by warm morning sunlight. Fern travels diagonally across right two thirds, sharp intricate botanical detail, rich forest green and golden bokeh. Left one third fades softly to warm ivory #f4f1e9 negative space for website text. Sophisticated calm nature journal, authentic irregular organic frond, not illustration, not a mockup, no text or watermarks. Soft luminous tranquil atmosphere."
 
 Optimized using cwebp at quality 80–82. Original project icons/characters above are retained. One Step's phone-shaped example remains an explicitly labeled illustrative app view using the existing action, not the invented interface from the concept image.
+
+## Collection illustrations (v3.01)
+
+`collection-apps.svg`, `collection-games.svg`, `collection-ai.svg`, `collection-photography.svg`, `collection-coding.svg`, and `collection-bucket.svg` are original decorative vector illustrations created for the project index. They echo the cobalt, coral and sage palette. Existing One Step/game images and fern artwork are reused for their matching cards. The category label remains readable independently of the image. No third-party assets or dependencies were added.
