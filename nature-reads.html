@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tatian's weekly long-form nature reading archive: walking, wild places, contemplative travel, folklore, and eco-speculative writing.">
   <title>Saturday Nature Reads · Tatian.app</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Gloock:ital@0;1&family=Figtree:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts.css">
   <style>
     :root {
       --bg:#e9e5dc; --surface:#fffdf8; --ink:#201a23; --mid:#655d68; --dim:#938a96;
@@ -47,25 +45,27 @@
     footer{max-width:1100px;margin:auto;border-top:1px solid var(--border);padding:1.8rem clamp(1.1rem,4vw,3rem) 3rem;color:var(--dim);font:.62rem "DM Mono",monospace;letter-spacing:.1em;text-transform:uppercase}
     @media(max-width:720px){.hero{grid-template-columns:1fr}.intro{max-width:40rem}article{grid-template-columns:1fr}.number{font-size:1rem;font-family:"DM Mono",monospace}.nav{height:54px}}
   </style>
+  <link rel="stylesheet" href="reading_v2.00.css">
+  <meta name="portfolio-version" content="2.00">
 </head>
 <body>
-<header><nav class="nav"><a class="wordmark" href="/"><em>Tatian</em>.app</a><a class="back" href="/">← Personal hub</a></nav></header>
+<header><nav class="nav"><a class="wordmark" href="index.html"><em>Tatian</em>.app</a><a class="back" href="index.html">← Personal hub</a></nav></header>
 <main>
   <section class="hero">
     <div><p class="eyebrow">A weekly reading trail</p><h1>Saturday <em>Nature Reads</em></h1></div>
     <p class="intro">Substantial, beautifully written work about walking, trails, wild places, contemplative travel—and occasional passages into folklore, fabulism, and ecological speculation.</p>
   </section>
-  <div class="filters" aria-label="Filter recommendations">
-    <button class="active" data-filter="all">All reads</button>
-    <button data-filter="walking">Walking & travel</button>
-    <button data-filter="wonder">Folklore & wonder</button>
-    <button data-filter="ecology">Animals & ecology</button>
+  <div class="filters" role="group" aria-label="Filter recommendations">
+    <button class="active" data-filter="all" aria-pressed="true">All reads</button>
+    <button data-filter="walking" aria-pressed="false">Walking & travel</button>
+    <button data-filter="wonder" aria-pressed="false">Folklore & wonder</button>
+    <button data-filter="ecology" aria-pressed="false">Animals & ecology</button>
   </div>
   <section class="list" aria-live="polite">
     <article data-tags="ecology">
       <div class="number">10</div><div>
         <div class="meta">October 7, 2026 · The Baffler</div>
-        <h2><a href="https://thebaffler.com/latest/up-a-creek-wallace" target="_blank" rel="noopener">Up a Creek ↗</a></h2>
+        <h2><a href="https://thebaffler.com/latest/up-a-creek-wallace" target="_blank" rel="noopener noreferrer">Up a Creek ↗</a></h2>
         <div class="byline">David Schurman Wallace</div>
         <p class="why">A meditation on John McPhee’s patient, expansive nature writing—and on what disappears when readers and writers no longer linger with a river, forest, glacier, or stretch of tundra. Moving through the Colorado River, Lake Powell, the Pine Barrens, and Alaska, Wallace argues that sustained attention is itself a form of ecological care.</p>
         <div class="badges"><span class="badge">24–28 min</span><span class="badge free">Free</span><span class="badge">No author audio found</span></div>
@@ -74,7 +74,7 @@
     <article data-tags="walking wonder ecology">
       <div class="number">09</div><div>
         <div class="meta">September 14, 2026 · The New Yorker</div>
-        <h2><a href="https://www.newyorker.com/magazine/2026/09/21/the-incredible-journey-of-a-migratory-shorebird" target="_blank" rel="noopener">The Incredible Journey of a Migratory Shorebird ↗</a></h2>
+        <h2><a href="https://www.newyorker.com/magazine/2026/09/21/the-incredible-journey-of-a-migratory-shorebird" target="_blank" rel="noopener noreferrer">The Incredible Journey of a Migratory Shorebird ↗</a></h2>
         <div class="byline">Rivka Galchen</div>
         <p class="why">From Chilean Patagonia to Alaskan nesting bogs, Galchen follows Hudsonian godwits on a nearly ten-thousand-mile migration. Field travel and vivid natural history mingle with Māori legend, old beliefs that birds flew to the moon, and the almost fabulist fact that godwits shrink and regrow organs for flight.</p>
         <div class="badges"><span class="badge">24–28 min</span><span class="badge metered">Likely metered</span><span class="badge">No free author audio found</span></div>
@@ -83,7 +83,7 @@
     <article data-tags="wonder ecology">
       <div class="number">08</div><div>
         <div class="meta">September 8, 2026 · Emergence Magazine</div>
-        <h2><a href="https://emergencemagazine.org/essay/how-the-pacific-makes-love-to-the-rockies/" target="_blank" rel="noopener">How the Pacific Makes Love to the Rockies ↗</a></h2>
+        <h2><a href="https://emergencemagazine.org/essay/how-the-pacific-makes-love-to-the-rockies/" target="_blank" rel="noopener noreferrer">How the Pacific Makes Love to the Rockies ↗</a></h2>
         <div class="byline">David James Duncan</div>
         <p class="why">Seven decades among Pacific Northwest rivers become a wild, prayerful cosmology. Salmon carry ocean into mountains; water and soul begin to merge; dreams, scripture, ecology, and lived encounters suggest other worlds shimmering within this one.</p>
         <div class="badges"><span class="badge">40–45 min</span><span class="badge free">Free</span><span class="badge audio">55-min author narration</span></div>
@@ -92,7 +92,7 @@
     <article data-tags="walking ecology">
       <div class="number">07</div><div>
         <div class="meta">April 14, 2026 · The Guardian</div>
-        <h2><a href="https://www.theguardian.com/environment/2026/apr/14/americas-hiking-culture-is-built-on-ego" target="_blank" rel="noopener">America’s Hiking Culture Is Built on Ego ↗</a></h2>
+        <h2><a href="https://www.theguardian.com/environment/2026/apr/14/americas-hiking-culture-is-built-on-ego" target="_blank" rel="noopener noreferrer">America’s Hiking Culture Is Built on Ego ↗</a></h2>
         <div class="byline">Joe Whittle</div>
         <p class="why">A Lenape writer and former wilderness ranger hikes through Lenapehoking while reconsidering the urge to conquer, complete, and claim wild places. Walking becomes relationship and responsibility rather than achievement.</p>
         <div class="badges"><span class="badge">20–25 min</span><span class="badge free">Free</span><span class="badge">No author audio found</span></div>
@@ -101,7 +101,7 @@
     <article data-tags="walking wonder ecology">
       <div class="number">06</div><div>
         <div class="meta">April 10, 2025 · Emergence Magazine</div>
-        <h2><a href="https://emergencemagazine.org/essay/in-the-wake-of-the-sandbound/" target="_blank" rel="noopener">In the Wake of the Sandbound ↗</a></h2>
+        <h2><a href="https://emergencemagazine.org/essay/in-the-wake-of-the-sandbound/" target="_blank" rel="noopener noreferrer">In the Wake of the Sandbound ↗</a></h2>
         <div class="byline">Nick Hunt</div>
         <p class="why">Hunt walks Lithuania’s shifting Curonian Spit, where dunes have swallowed villages. Ecological history meets pagan sacred groves, buried forests, wandering giants, and the legend of Neringa—the giantess said to have created the peninsula.</p>
         <div class="badges"><span class="badge">25–30 min</span><span class="badge free">Free</span><span class="badge audio">37-min author narration</span></div>
@@ -110,7 +110,7 @@
     <article data-tags="wonder ecology">
       <div class="number">05</div><div>
         <div class="meta">February 2, 2026 · Emergence Magazine</div>
-        <h2><a href="https://emergencemagazine.org/fiction/tortoise-station/" target="_blank" rel="noopener">Tortoise Station ↗</a></h2>
+        <h2><a href="https://emergencemagazine.org/fiction/tortoise-station/" target="_blank" rel="noopener noreferrer">Tortoise Station ↗</a></h2>
         <div class="byline">Lydia Millet</div>
         <p class="why">In this quietly uncanny eco-speculative story, ancient desert tortoises make weeks-long walks through a climate-altered Southwest while a patient, imperfect network of humans helps threatened species endure.</p>
         <div class="badges"><span class="badge">25–30 min</span><span class="badge free">Free</span><span class="badge audio">34-min author narration</span></div>
@@ -119,7 +119,7 @@
     <article data-tags="walking ecology">
       <div class="number">04</div><div>
         <div class="meta">March 12, 2026 · Longreads</div>
-        <h2><a href="https://longreads.com/2026/03/12/into-the-darkness/" target="_blank" rel="noopener">Into the Darkness ↗</a></h2>
+        <h2><a href="https://longreads.com/2026/03/12/into-the-darkness/" target="_blank" rel="noopener noreferrer">Into the Darkness ↗</a></h2>
         <div class="byline">Kendra Atleework</div>
         <p class="why">A walk into Germany’s Black Forest in search of the place behind its fairy-tale image—through misty trails, old farmsteads, protected forest, and spruce groves collapsing under climate change.</p>
         <div class="badges"><span class="badge">17 min</span><span class="badge free">Free</span><span class="badge">No author audio found</span></div>
@@ -128,7 +128,7 @@
     <article data-tags="walking ecology">
       <div class="number">03</div><div>
         <div class="meta">May 14, 2026 · Emergence Magazine</div>
-        <h2><a href="https://emergencemagazine.org/essay/the-thread-of-belonging/" target="_blank" rel="noopener">The Thread of Belonging ↗</a></h2>
+        <h2><a href="https://emergencemagazine.org/essay/the-thread-of-belonging/" target="_blank" rel="noopener noreferrer">The Thread of Belonging ↗</a></h2>
         <div class="byline">Dara McAnulty</div>
         <p class="why">Walking anchors McAnulty between university life in Cambridge and his mountainous Northern Irish home. Barn owls, kingfishers, woods, and family walks become threads connecting place, memory, regulation, and belonging.</p>
         <div class="badges"><span class="badge">13–15 min</span><span class="badge free">Free</span><span class="badge audio">Free author narration</span></div>
@@ -137,7 +137,7 @@
     <article data-tags="walking wonder ecology">
       <div class="number">02</div><div>
         <div class="meta">February 18, 2026 · CRAFT Literary</div>
-        <h2><a href="https://www.craftliterary.com/2026/02/18/way-trails-wolves-caitlin-scarano/" target="_blank" rel="noopener">Of Way Trails and Wolves ↗</a></h2>
+        <h2><a href="https://www.craftliterary.com/2026/02/18/way-trails-wolves-caitlin-scarano/" target="_blank" rel="noopener noreferrer">Of Way Trails and Wolves ↗</a></h2>
         <div class="byline">Caitlin Scarano</div>
         <p class="why">From a one-room cabin where the road vanishes into Washington’s northern Cascades, Scarano braids trails, wolves, partnership, and the unstable idea of wilderness into a lyrical reckoning.</p>
         <div class="badges"><span class="badge">20–25 min</span><span class="badge free">Free</span><span class="badge">No author audio found</span></div>
@@ -146,7 +146,7 @@
     <article data-tags="walking wonder ecology">
       <div class="number">01</div><div>
         <div class="meta">June 2, 2026 · Longreads</div>
-        <h2><a href="https://longreads.com/2026/06/02/jenny-odell-deep-listening-soft-eyes/" target="_blank" rel="noopener">Living in an Alive World ↗</a></h2>
+        <h2><a href="https://longreads.com/2026/06/02/jenny-odell-deep-listening-soft-eyes/" target="_blank" rel="noopener noreferrer">Living in an Alive World ↗</a></h2>
         <div class="byline">Jenny Odell</div>
         <p class="why">Beginning on a Santa Cruz Mountains trail, Odell explores “soft eyes”—walking with relaxed, panoramic awareness—and deep listening as ways of becoming more fully present to redwoods, birds, and the more-than-human world.</p>
         <div class="badges"><span class="badge">23 min</span><span class="badge free">Free</span><span class="badge">No author audio found</span></div>
@@ -159,7 +159,7 @@
   document.getElementById('year').textContent=new Date().getFullYear();
   const buttons=document.querySelectorAll('[data-filter]'), reads=document.querySelectorAll('article[data-tags]');
   buttons.forEach(button=>button.addEventListener('click',()=>{
-    buttons.forEach(b=>b.classList.remove('active')); button.classList.add('active');
+    buttons.forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')}); button.classList.add('active');button.setAttribute('aria-pressed','true');
     const filter=button.dataset.filter;
     reads.forEach(read=>read.hidden=filter!=='all'&&!read.dataset.tags.split(' ').includes(filter));
   }));
