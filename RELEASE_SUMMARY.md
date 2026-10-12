@@ -1,3 +1,9 @@
+# Storytelling — v3.03
+
+The collection now includes Storytelling: a dedicated page for videos and future PDF stories. The supplied Yosemite Backpacking performance is embedded with a direct YouTube fallback. No PDFs have been supplied; the written-story section clearly says they are coming. Adding PDFs and videos is documented in stories/README.md.
+
+All original 18 records and the hero are unchanged. Four automated behavior tests, preservation and portable checks pass. Inspected at 1440/768/390/320px, including real video playback and category navigation. No dependencies, auth, Firestore, service-worker or hosting configuration changes. Pending preview PR review and merge.
+
 # Personal artwork — v3.02
 
 A new personal still life reflects Tatian’s creative interests. Seven app cards now have distinct project-specific illustrations. All images are locally served optimized WebP; the hero includes a smaller responsive variant. All 18 project records, links, privacy labels and existing interactions remain unchanged.

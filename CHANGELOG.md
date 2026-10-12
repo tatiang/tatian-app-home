@@ -1,6 +1,11 @@
 # Changelog
 
-Oct 12, 2026 — 2:09 PM PT — pending — Give the portfolio personal and project-specific artwork
+Oct 12, 2026 — 3:00 PM PT — pending — Add a home for stories on the page and stage
+
+- Add a Storytelling collection entry and dedicated video/PDF index.
+- Embed Yosemite Backpacking with a direct YouTube link; reserve space for future written stories.
+
+Oct 12, 2026 — 2:09 PM PT — 75a17b6 — Give the portfolio personal and project-specific artwork
 
 - Replace seven repeated thumbnails with distinct project illustrations.
 - Reflect poetry, photography, storytelling, soccer, meditation, Balinese culture and making in the hero.

@@ -77,3 +77,7 @@ Prompt: Use case: stylized-concept. Asset: wide website project thumbnail, lands
 Asset: `project-family-trip-v3.02.webp`
 
 Prompt: Use case: stylized-concept. Asset: wide website project thumbnail, landscape 3:2. A warm travel still life with coral suitcase, folded blank map with winding blue route, tiny camera and three small colorful luggage tags, evoking shared family adventures. Premium tactile editorial 3D illustration, handmade ceramic/paper/wood feel, subtle realistic texture, warm soft studio light and gentle shadows. Palette ivory, cobalt blue, coral and sage. Seamless pale ivory or softly tinted background. Single centered compact composition with generous empty margins all sides; objects occupy middle 65% width and 65% height for a wide thumbnail crop. No text, no logos, no UI, no watermark, no abstract blue interlocking loops. Visually clear at small size.
+
+## Storytelling (v3.03)
+
+`storytelling.svg` is an original decorative book-and-microphone vector in the site palette, used on the Storytelling page and collection card. No external image assets added.
