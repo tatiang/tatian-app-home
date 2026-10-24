@@ -28,6 +28,16 @@ story_cards = re.findall(r'<article class="project " data-category="Storytelling
 assert len(story_cards) == 1
 assert Page(story_cards[0]).projects[0]["href"] == "storytelling.html"
 preserved_source = source.replace(story_cards[0], "")
+meal_cards = re.findall(r'<article class="project is-private" data-category="Apps">(?:(?!</article>).)*project-title-20(?:(?!</article>).)*</article>\n', preserved_source)
+assert len(meal_cards) == 1
+meal = Page(meal_cards[0])
+assert meal.projects[0]['href'] == 'https://hope-meal-planner.tgleaf.chatgpt.site'
+assert meal.categories == ['Apps']
+assert 'Private · Family only' in meal_cards[0]
+assert 'recovery' not in meal_cards[0].lower()
+preserved_source = preserved_source.replace(meal_cards[0], '')
+assert len(Page(source).projects) == 20
+assert '>20 projects</span>' in source
 new = Page(preserved_source)
 assert len(new.projects) == baseline['project_count']
 assert [link['href'] for link in new.projects] == baseline['project_links'], 'Project destinations changed'
@@ -53,4 +63,4 @@ for asset in ['curiosity-cabinet.webp','curiosity-cabinet-small.webp','fern-stud
 story = (ROOT/'storytelling.html').read_text()
 assert 'https://www.youtube-nocookie.com/embed/i_mtjWgvwnU' in story
 assert 'https://youtu.be/i_mtjWgvwnU' in story
-print('PASS: Storytelling page and video verified; 18 project records/links/details preserved; reading archive unchanged; local assets, anchors, IDs, external-link safety and image budgets valid.')
+print('PASS: 20 projects; private meal planner entry and Storytelling page verified; 18 project records/links/details preserved; reading archive unchanged; local assets, anchors, IDs, external-link safety and image budgets valid.')

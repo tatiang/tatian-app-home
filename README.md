@@ -43,3 +43,7 @@ Local checks passed: JavaScript syntax, three behavior tests, preservation/stati
 Changes are prepared on a feature branch for pull-request review. Production deployment is not implied by a successful local preview or push. No deployment workflow is added by this redesign.
 
 The collection uses lightweight decorative category SVGs and existing project imagery. It displays three columns on desktop, two on tablets and one below 541px; filtering removes hidden cards from the grid. Every card remains one native link with its original accessible name and destination.
+
+## Hope’s Meal Planner
+
+The collection includes 20 projects. The new Apps entry links to the private Sites planner and displays only a neutral description. Its complete native anchor is clickable and uses the existing search and category filtering. Authentication, private meal data and shared storage live in the separate Sites project; this public repository contains none of those details.

@@ -37,7 +37,7 @@ function load(motionEnabled) {
 }
 test('category and search combine, clear and announce empty results', () => {
   const page = load(false);
-  assert.equal(page.count.textContent, '19 projects');
+  assert.equal(page.count.textContent, '20 projects');
   assert.equal(page.searchWrap.hidden, false);
   page.search.value = 'ROBOT'; page.search.fire('input');
   assert.equal(page.count.textContent,'2 projects');
@@ -45,7 +45,7 @@ test('category and search combine, clear and announce empty results', () => {
   assert.equal(page.count.textContent,'0 projects'); assert.equal(page.empty.hidden,false);
   page.search.value=''; page.search.fire('input');
   assert.equal(page.count.textContent,'1 project'); assert.equal(page.empty.hidden,true);
-  page.filters[0].fire('click'); assert.equal(page.count.textContent,'19 projects');
+  page.filters[0].fire('click'); assert.equal(page.count.textContent,'20 projects');
 });
 test('reduced motion and coarse pointers never schedule motion', () => {
   const page = load(false);
@@ -70,4 +70,12 @@ test('Storytelling category finds the new index and combines with search', () =>
   assert.equal(page.projects.filter(x=>!x.hidden)[0].dataset.category,'Storytelling');
   page.search.value='robot'; page.search.fire('input');
   assert.equal(page.count.textContent,'0 projects');
+});
+
+test('private meal planner appears in Apps and search', () => {
+ const page=load(false);
+ page.search.value='Hope';page.search.fire('input');
+ page.filters.find(x=>x.dataset.filter==='Apps').fire('click');
+ assert.equal(page.count.textContent,'1 project');
+ assert.equal(page.projects.filter(x=>!x.hidden)[0].dataset.category,'Apps');
 });

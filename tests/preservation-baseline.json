@@ -1,5 +1,5 @@
 {
-  "description": "Pre-redesign v2.02 content snapshot: update intentionally when project content changes.",
+  "description": "Original 18 project records and current reading archive from main 0a65ca8; separate additions are checked explicitly.",
   "project_count": 18,
   "project_links": [
     "https://onestep.tatian.app",
@@ -45,7 +45,7 @@
     {
       "start": "<div class=\"project-list\"",
       "end": "<p class=\"index-note\"",
-      "sha256": "5de87adf70fbbec2d3a99afd06f8c84798fb8334ed975506ec4a7920c53ff482"
+      "sha256": "e345dca2173e423f1c57e6214bafe8c36b07f3105a69107db6440cbbd66ebb28"
     },
     {
       "start": "<div class=\"project-details wrap\">",
@@ -53,5 +53,5 @@
       "sha256": "87cb475b0f206d35ad60ad55714c967bd3c8ae1910d2e16e900a9a9bffef5748"
     }
   ],
-  "reading_sha256": "629c46392e6569fd53caefbc9b456ad63b2dff1272d54dad37b4b7f4685bdcbe"
+  "reading_sha256": "0befbf2e203f8ddc7218655c45bb66c4ec00c138cd4b96836cce3486aff29783"
 }
