@@ -36,8 +36,13 @@ assert meal.categories == ['Apps']
 assert 'Private · Family only' in meal_cards[0]
 assert 'recovery' not in meal_cards[0].lower()
 preserved_source = preserved_source.replace(meal_cards[0], '')
-assert len(Page(source).projects) == 20
-assert '>20 projects</span>' in source
+seating_cards = re.findall(r'<article class="project is-private" data-category="Apps">(?:(?!</article>).)*project-title-21(?:(?!</article>).)*</article>\n', preserved_source)
+assert len(seating_cards) == 1
+assert Page(seating_cards[0]).projects[0]['href'] == 'https://tatiang.github.io/SeatingChart/'
+assert 'Private · Mark Day Faculty only' in seating_cards[0]
+preserved_source = preserved_source.replace(seating_cards[0], '')
+assert len(Page(source).projects) == 21
+assert '>21 projects</span>' in source
 new = Page(preserved_source)
 assert len(new.projects) == baseline['project_count']
 assert [link['href'] for link in new.projects] == baseline['project_links'], 'Project destinations changed'
@@ -63,4 +68,4 @@ for asset in ['curiosity-cabinet.webp','curiosity-cabinet-small.webp','fern-stud
 story = (ROOT/'storytelling.html').read_text()
 assert 'https://www.youtube-nocookie.com/embed/i_mtjWgvwnU' in story
 assert 'https://youtu.be/i_mtjWgvwnU' in story
-print('PASS: 20 projects; private meal planner entry and Storytelling page verified; 18 project records/links/details preserved; reading archive unchanged; local assets, anchors, IDs, external-link safety and image budgets valid.')
+print('PASS: 21 projects; private meal planner entry and Storytelling page verified; 18 project records/links/details preserved; reading archive unchanged; local assets, anchors, IDs, external-link safety and image budgets valid.')
