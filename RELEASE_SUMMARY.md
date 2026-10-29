@@ -1,3 +1,9 @@
+# Seating Chart Builder card — prepared, not published
+
+Added the Seating Chart Builder entry to Apps, matching the existing project row design and linking to https://tatiang.github.io/SeatingChart/. The card uses the requested description and “Private · Mark Day Faculty only” status. Existing entries and navigation remain intact. Publish only after the redesigned application passes live Faculty authorization checks.
+
+Validation: portfolio preservation checks, five behavior tests and the portable verification unittest pass.
+
 # Storytelling — v3.03
 
 The collection now includes Storytelling: a dedicated page for videos and future PDF stories. The supplied Yosemite Backpacking performance is embedded with a direct YouTube fallback. No PDFs have been supplied; the written-story section clearly says they are coming. Adding PDFs and videos is documented in stories/README.md.
