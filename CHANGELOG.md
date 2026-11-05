@@ -1,3 +1,7 @@
+Oct 29, 2026 — 4:35 PM PT — HEAD — Added Seating Chart Builder to the Apps collection
+- Added the requested description, application link and Private · Mark Day Faculty only status.
+- Preserved existing projects and verified the 21-project collection. Publication is held until the app authorization rollout is complete.
+
 # Changelog
 
 Oct 12, 2026 — 3:00 PM PT — pending — Add a home for stories on the page and stage

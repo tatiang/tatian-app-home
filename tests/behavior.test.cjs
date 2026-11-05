@@ -37,7 +37,7 @@ function load(motionEnabled) {
 }
 test('category and search combine, clear and announce empty results', () => {
   const page = load(false);
-  assert.equal(page.count.textContent, '20 projects');
+  assert.equal(page.count.textContent, '21 projects');
   assert.equal(page.searchWrap.hidden, false);
   page.search.value = 'ROBOT'; page.search.fire('input');
   assert.equal(page.count.textContent,'2 projects');
@@ -45,7 +45,7 @@ test('category and search combine, clear and announce empty results', () => {
   assert.equal(page.count.textContent,'0 projects'); assert.equal(page.empty.hidden,false);
   page.search.value=''; page.search.fire('input');
   assert.equal(page.count.textContent,'1 project'); assert.equal(page.empty.hidden,true);
-  page.filters[0].fire('click'); assert.equal(page.count.textContent,'20 projects');
+  page.filters[0].fire('click'); assert.equal(page.count.textContent,'21 projects');
 });
 test('reduced motion and coarse pointers never schedule motion', () => {
   const page = load(false);
