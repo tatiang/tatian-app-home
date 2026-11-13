@@ -51,3 +51,5 @@ The collection includes 20 projects. The new Apps entry links to the private Sit
 ## Wyrdmoor
 
 The collection includes 21 projects. The Games entry opens `wyrdmoor/index.html`, a first-person 3D fantasy RPG served from this site. The page is a single unminified file with its styles and game code inline; it loads `wyrdmoor/three-0.147.0.min.js` and the fonts in `wyrdmoor/fonts/` and nothing from other origins. Licenses for three.js (MIT), Alegreya Sans and Grenze Gotisch (OFL) are in `wyrdmoor/licenses/`. `style_v3.04.css` gives the card its in-game capture. Saves are kept in the visitor’s `localStorage`; the game has no accounts, analytics or network calls. `tests/verify_site.py` checks that the game page references only local files that exist.
+
+The game's source lives in the private repository [tatiang/wyrdmoor](https://github.com/tatiang/wyrdmoor). To update the page here, run `python3 tools/build-site.py <path to this repo>/wyrdmoor` from that repository; it rewrites only `wyrdmoor/index.html`.
