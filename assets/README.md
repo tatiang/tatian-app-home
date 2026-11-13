@@ -81,3 +81,7 @@ Prompt: Use case: stylized-concept. Asset: wide website project thumbnail, lands
 ## Storytelling (v3.03)
 
 `storytelling.svg` is an original decorative book-and-microphone vector in the site palette, used on the Storytelling page and collection card. No external image assets added.
+
+## Wyrdmoor (v3.04)
+
+`project-wyrdmoor-v3.04.webp` is an unedited in-game capture of Wyrdmoor (the Cinderreach biome, interface hidden), resized to 960×384 and saved as WebP at quality 80. The game’s own engine, fonts and licenses live in `wyrdmoor/`: three.js 0.147.0 from the npm package, and the Latin subsets of Alegreya Sans and Grenze Gotisch from Google Fonts.

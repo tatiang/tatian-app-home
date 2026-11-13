@@ -36,8 +36,15 @@ assert meal.categories == ['Apps']
 assert 'Private · Family only' in meal_cards[0]
 assert 'recovery' not in meal_cards[0].lower()
 preserved_source = preserved_source.replace(meal_cards[0], '')
-assert len(Page(source).projects) == 20
-assert '>20 projects</span>' in source
+game_cards = re.findall(r'<article class="project " data-category="Games">(?:(?!</article>).)*project-title-21(?:(?!</article>).)*</article>\n', preserved_source)
+assert len(game_cards) == 1
+game = Page(game_cards[0])
+assert game.projects[0]['href'] == 'wyrdmoor/'
+assert game.categories == ['Games']
+assert 'target' not in game.projects[0]
+preserved_source = preserved_source.replace(game_cards[0], '')
+assert len(Page(source).projects) == 21
+assert '>21 projects</span>' in source
 new = Page(preserved_source)
 assert len(new.projects) == baseline['project_count']
 assert [link['href'] for link in new.projects] == baseline['project_links'], 'Project destinations changed'
@@ -60,7 +67,22 @@ for name in ['index.html','nature-reads.html','storytelling.html']:
 assert sha256((ROOT/'nature-reads.html').read_bytes()).hexdigest() == baseline['reading_sha256']
 for asset in ['curiosity-cabinet.webp','curiosity-cabinet-small.webp','fern-study.webp']:
     assert (ROOT/'assets'/asset).stat().st_size < 300_000, asset
+# Wyrdmoor is served from this site with nothing fetched from elsewhere.
+game_dir = ROOT/'wyrdmoor'
+game_text = (game_dir/'index.html').read_text()
+game_page = Page(game_text)
+assert len(game_page.ids) == len(set(game_page.ids)), 'Duplicate IDs in wyrdmoor/index.html'
+assert game_page.assets, 'Wyrdmoor must reference its local engine and fonts'
+for asset in game_page.assets:
+    assert not urlsplit(asset).scheme and not asset.startswith('//'), asset
+    assert (game_dir/asset).resolve().is_file(), asset
+for remote in re.findall(r'''(?:src|href)=["'](https?:)?//''', game_text):
+    raise AssertionError('Wyrdmoor must not load remote resources')
+for font in re.findall(r"url\('([^')]+)'\)", (game_dir/'fonts.css').read_text()):
+    assert (game_dir/font).is_file(), font
+assert (game_dir/'index.html').stat().st_size < 400_000
+assert (ROOT/'assets/project-wyrdmoor-v3.04.webp').stat().st_size < 120_000
 story = (ROOT/'storytelling.html').read_text()
 assert 'https://www.youtube-nocookie.com/embed/i_mtjWgvwnU' in story
 assert 'https://youtu.be/i_mtjWgvwnU' in story
-print('PASS: 20 projects; private meal planner entry and Storytelling page verified; 18 project records/links/details preserved; reading archive unchanged; local assets, anchors, IDs, external-link safety and image budgets valid.')
+print('PASS: 21 projects; Wyrdmoor game page self-hosted; private meal planner entry and Storytelling page verified; 18 project records/links/details preserved; reading archive unchanged; local assets, anchors, IDs, external-link safety and image budgets valid.')

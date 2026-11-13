@@ -1,3 +1,11 @@
+# Wyrdmoor — v3.04
+
+The collection gains its 21st project: Wyrdmoor, a first-person 3D fantasy RPG that plays in the browser. Its Games card opens `wyrdmoor/`, served from this site, with a link back to the homepage. The card shows an in-game capture.
+
+The game page loads only local files: the page itself (about 310 KB, unminified), three.js 0.147.0 (about 610 KB) and five WOFF2 font files. Nothing is fetched from a CDN or font service. Progress saves in the visitor’s browser only.
+
+All existing project records, links, privacy labels and interactions are unchanged; their preserved sections are byte-identical to the previous release. Six behavior tests and the Wyrdmoor static checks pass. The preservation hash check was already failing before this change, since the weekly Nature Reads updates were made without refreshing `tests/preservation-baseline.json`; it is left as it was. The homepage card was inspected at 1440 and 390 pixels, and the game page was loaded over local HTTP. The game was exercised in a software renderer only, so real-device frame rate, audio and mouse capture are not yet confirmed. No auth, Firestore, service-worker or hosting changes. Pending review and merge.
+
 # Storytelling — v3.03
 
 The collection now includes Storytelling: a dedicated page for videos and future PDF stories. The supplied Yosemite Backpacking performance is embedded with a direct YouTube fallback. No PDFs have been supplied; the written-story section clearly says they are coming. Adding PDFs and videos is documented in stories/README.md.

@@ -1,5 +1,10 @@
 # Changelog
 
+Nov 12, 2026 — 11:21 PM PT — pending — Add Wyrdmoor, a first-person fantasy RPG, to the collection
+
+- Add a Games entry and serve the game from `wyrdmoor/` on this site.
+- Self-host its engine and typefaces so the page loads nothing from other services.
+
 Oct 12, 2026 — 3:00 PM PT — pending — Add a home for stories on the page and stage
 
 - Add a Storytelling collection entry and dedicated video/PDF index.

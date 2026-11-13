@@ -1,0 +1,3 @@
+@import url('style_v3.03.css');
+/* Wyrdmoor: an in-game capture stands in for the Games illustration. */
+.project-line[aria-labelledby="project-title-21"]::before { background-image:url("assets/project-wyrdmoor-v3.04.webp"); background-size:cover; background-position:50% 55%; background-color:#2b1d1a; }
