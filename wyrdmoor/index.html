@@ -84,6 +84,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 #topright .gold::before{content:"";display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;background:radial-gradient(circle at 35% 30%,#fff3c0,#d2a956 55%,#7d6230);vertical-align:-1px}
 #topright .lvl{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim)}
 #topright .clock{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim);font-weight:500}
+#fps{left:var(--sl);bottom:calc(var(--sb) - 7px);font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--bone-dim);text-shadow:0 1px 3px #000}
 #buffs{right:var(--sr);top:calc(var(--st) + 70px);display:flex;flex-direction:column;gap:5px;align-items:flex-end}
 #buffs div{padding:3px 9px 3px 8px;font-size:12px;font-weight:700;letter-spacing:.06em;background:rgba(7,9,13,.7);border-left:3px solid var(--c,var(--gilt));text-shadow:none}
 #buffs div span{color:var(--bone-dim);margin-left:8px;font-weight:500}
@@ -171,6 +172,7 @@ body:not(.touch) #touch{display:none}
 .opt{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:6px 0}
 .opt select,.opt input[type=range]{accent-color:var(--gilt);background:var(--ink-3);color:var(--bone);border:1px solid var(--gilt-dim);padding:5px 8px;font:inherit;min-width:150px}
 .opt input[type=range]{padding:0}
+.opt input[type=checkbox]{accent-color:var(--gilt);width:20px;height:20px;margin:0 2px}
 
 /* title */
 #title{flex-direction:column;justify-content:flex-end;align-items:flex-start;background:linear-gradient(180deg,rgba(7,9,13,.25),rgba(7,9,13,0) 30%,rgba(7,9,13,.82) 82%);padding-bottom:max(5vh,var(--sb))}
@@ -246,6 +248,7 @@ body.touch #vitals{top:calc(var(--st) + 56px)}
     <div id="toasts"></div>
     <div id="banner"><h2></h2><hr><p></p></div>
     <div id="xp"><i></i></div>
+    <div id="fps" hidden></div>
     <div id="touch">
       <div id="stick"><i></i></div>
       <button class="tb" id="tb-cast" type="button">Cast</button>
@@ -295,9 +298,13 @@ body.touch #vitals{top:calc(var(--st) + 56px)}
       <h3>Settings</h3>
       <div class="opt"><label for="o-quality">Graphics quality</label>
         <select id="o-quality"><option value="0">Low</option><option value="1">Medium</option><option value="2">High</option><option value="3">Ultra</option></select></div>
-      <div class="opt"><label for="o-vol">Volume</label><input id="o-vol" type="range" min="0" max="100" value="70"></div>
+      <div class="opt"><label for="o-vol">Master volume</label><input id="o-vol" type="range" min="0" max="100" value="70"></div>
+      <div class="opt"><label for="o-mus">Music</label><input id="o-mus" type="range" min="0" max="100" value="100"></div>
+      <div class="opt"><label for="o-sfx">Sound effects</label><input id="o-sfx" type="range" min="0" max="100" value="100"></div>
       <div class="opt"><label for="o-sens">Look sensitivity</label><input id="o-sens" type="range" min="20" max="200" value="100"></div>
       <div class="opt"><label for="o-fov">Field of view</label><input id="o-fov" type="range" min="60" max="100" value="75"></div>
+      <div class="opt"><label for="o-invy">Invert look up/down</label><input id="o-invy" type="checkbox"></div>
+      <div class="opt"><label for="o-fps">Show frame rate</label><input id="o-fps" type="checkbox"></div>
     </div>
   </div>
 
@@ -894,6 +901,20 @@ function collideCircle(p, rad) {
     }
   }
   return hit;
+}
+// does a circle of radius rad at (x, z), standing at height y, overlap any collider?
+function circleBlocked(x, y, z, rad) {
+  const x0 = Math.floor((x - rad) / CSZ), x1 = Math.floor((x + rad) / CSZ), z0 = Math.floor((z - rad) / CSZ), z1 = Math.floor((z + rad) / CSZ);
+  for (let cx = x0; cx <= x1; cx++) for (let cz = z0; cz <= z1; cz++) {
+    const a = COL.get((cx + 512) * 1024 + (cz + 512));
+    if (!a) continue;
+    for (let i = 0; i < a.length; i++) {
+      const o = a[i]; if (o.off || y > o.y + o.h) continue;
+      const dx = x - o.x, dz = z - o.z, rr = rad + o.r;
+      if (dx * dx + dz * dz < rr * rr) return true;
+    }
+  }
+  return false;
 }
 function pointBlocked(x, y, z) {
   const a = COL.get((Math.floor(x / CSZ) + 512) * 1024 + (Math.floor(z / CSZ) + 512));
@@ -2161,7 +2182,7 @@ function renderFrame() {
 // ===================================================================
 //  AUDIO: fully synthesised ambience, music and effects (WebAudio)
 // ===================================================================
-const AU = { ctx: null, vol: 0.7, on: false, combat: 0, boss: 0 };
+const AU = { ctx: null, vol: 0.7, mus: 1, fx: 1, on: false, combat: 0, boss: 0 };
 function initAudio() {
   if (AU.ctx) { if (AU.ctx.state === 'suspended') AU.ctx.resume(); return; }
   const AC = window.AudioContext || window.webkitAudioContext;
@@ -2171,13 +2192,17 @@ function initAudio() {
   AU.on = true;
   const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 5; comp.connect(ctx.destination);
   AU.master = ctx.createGain(); AU.master.gain.value = AU.vol; AU.master.connect(comp);
-  AU.sfxBus = ctx.createGain(); AU.sfxBus.gain.value = 0.9; AU.sfxBus.connect(AU.master);
-  AU.musBus = ctx.createGain(); AU.musBus.gain.value = 0.5; AU.musBus.connect(AU.master);
+  AU.sfxBus = ctx.createGain(); AU.sfxBus.connect(AU.master);
+  AU.musBus = ctx.createGain(); AU.musBus.connect(AU.master);
+  // ambience beds count as sound effects; reverb sends are split so each slider also scales its reverb tail
+  AU.ambBus = ctx.createGain(); AU.ambBus.connect(AU.master);
   // generated reverb impulse
   const len = ctx.sampleRate * 2.8, ir = ctx.createBuffer(2, len, ctx.sampleRate);
   for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
   AU.rev = ctx.createConvolver(); AU.rev.buffer = ir;
   const rg = ctx.createGain(); rg.gain.value = 0.5; AU.rev.connect(rg); rg.connect(AU.master);
+  AU.revSfx = ctx.createGain(); AU.revSfx.connect(AU.rev); AU.revMus = ctx.createGain(); AU.revMus.connect(AU.rev);
+  setMix(AU.mus, AU.fx);
   // noise buffer
   const nb = AU.noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
   const nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
@@ -2186,7 +2211,7 @@ function initAudio() {
     const s = ctx.createBufferSource(); s.buffer = nb; s.loop = true;
     const fl = ctx.createBiquadFilter(); fl.type = type; fl.frequency.value = f; fl.Q.value = q;
     const gn = ctx.createGain(); gn.gain.value = g;
-    s.connect(fl); fl.connect(gn); gn.connect(AU.master); s.start();
+    s.connect(fl); fl.connect(gn); gn.connect(AU.ambBus); s.start();
     return { f: fl, g: gn };
   };
   AU.wind = bed('bandpass', 420, 0.5, 0.05);
@@ -2196,12 +2221,19 @@ function initAudio() {
   const co = ctx.createOscillator(); co.type = 'sine'; co.frequency.value = 4300;
   const cl = ctx.createOscillator(); cl.type = 'square'; cl.frequency.value = 27;
   const cg = ctx.createGain(); cg.gain.value = 0; const cm = ctx.createGain(); cm.gain.value = 0;
-  cl.connect(cm.gain); co.connect(cm); cm.connect(cg); cg.connect(AU.master); co.start(); cl.start();
+  cl.connect(cm.gain); co.connect(cm); cm.connect(cg); cg.connect(AU.ambBus); co.start(); cl.start();
   AU.crick = cg;
   AU.nextChord = ctx.currentTime + 0.5; AU.nextPluck = ctx.currentTime + 2; AU.nextBeat = ctx.currentTime + 1; AU.chordI = 0; AU.beatI = 0;
   setInterval(musicTick, 180);
 }
 function setVolume(v) { AU.vol = v; if (AU.master) AU.master.gain.value = v; }
+// music and sound-effect levels (0..1) on top of the master volume; 1 keeps the original mix
+function setMix(mus, fx) {
+  AU.mus = mus; AU.fx = fx;
+  if (!AU.musBus) return;
+  AU.musBus.gain.value = 0.5 * mus; AU.revMus.gain.value = mus;
+  AU.sfxBus.gain.value = 0.9 * fx; AU.revSfx.gain.value = fx; AU.ambBus.gain.value = fx;
+}
 function envGain(t0, attack, dur, vol) {
   const g = AU.ctx.createGain();
   g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(Math.max(vol, 0.0002), t0 + attack); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
@@ -2211,7 +2243,7 @@ function outNode(g, o) {
   let n = g;
   if (o.pan && AU.ctx.createStereoPanner) { const p = AU.ctx.createStereoPanner(); p.pan.value = clamp(o.pan, -1, 1); n.connect(p); n = p; }
   n.connect(o.bus || AU.sfxBus);
-  if (o.rev) { const r = AU.ctx.createGain(); r.gain.value = o.rev; n.connect(r); r.connect(AU.rev); }
+  if (o.rev) { const r = AU.ctx.createGain(); r.gain.value = o.rev; n.connect(r); r.connect(o.bus === AU.musBus ? AU.revMus : AU.revSfx); }
 }
 function tone(f, dur, type = 'sine', vol = 0.2, o = {}) {
   if (!AU.on) return;
@@ -2728,6 +2760,11 @@ class Enemy {
     this.r = def.r * sc; this.h = def.h * sc;
     this.pos = new THREE.Vector3(x, heightAt(x, z) + (def.fly || 0), z);
     this.home = { x, z }; this.wx = x; this.wz = z; this.wanderT = rand(0, 3);
+    // steering: committed side (+1 left / -1 right), smoothed heading offset, stuck tracking, detours
+    this.steerSide = 0; this.steerT = 0; this.steerOff = 0; this.steerA = 0; this.probeT = 0;
+    this.stuckT = 0; this.prog = null; this.detourT = 0; this.detours = 0; this.detourD = 0; this.calmT = 0;
+    // how far below the waterline this creature floats when the water is deeper than that
+    this.swimD = clamp(this.h * 0.55, 0.4, 1.25);
     this.yaw = rand(TAU); this.kx = 0; this.kz = 0;
     this.state = 'spawn'; this.t = 0; this.cd = rand(0.4, 1.2); this.atk = 0; this.lunge = 0; this.walk = rand(TAU); this.animSpeed = 0;
     this.flash = 0; this.burn = 0; this.burnDps = 0; this.burnTick = 0; this.chill = 0; this.barT = 0; this.seed = rand(100); this.strafe = Math.random() < 0.5 ? 1 : -1; this.strafeT = rand(2, 4);
@@ -2791,16 +2828,20 @@ class Enemy {
   }
   think(dt, dx, dz, dist) {
     const def = this.def, slow = this.chill > 0 ? 0.55 : 1;
-    this.cd -= dt * slow;
-    let mx = 0, mz = 0, sp = 0;
+    this.cd -= dt * slow; if (this.calmT > 0) this.calmT -= dt;
+    let mx = 0, mz = 0, sp = 0, td = dist, closing = false;
     const ty = Math.atan2(dx, dz), inv = 1 / (dist + 1e-4);
     switch (this.state) {
       case 'idle': {
         this.wanderT -= dt;
-        if (this.wanderT <= 0) { this.wanderT = rand(2.5, 6); const a = rand(TAU), d = rand(2, 7); this.wx = this.home.x + Math.cos(a) * d; this.wz = this.home.z + Math.sin(a) * d; }
+        if (this.wanderT <= 0) {
+          this.wanderT = rand(2.5, 6); const a = rand(TAU), d = rand(2, 7), x = this.home.x + Math.cos(a) * d, z = this.home.z + Math.sin(a) * d;
+          // idle wandering stays on dry land; only a chase takes ground creatures into water
+          if (def.fly || heightAt(x, z) > WATER_Y - 0.25) { this.wx = x; this.wz = z; }
+        }
         const wx = this.wx - this.pos.x, wz = this.wz - this.pos.z, wd = Math.hypot(wx, wz);
-        if (wd > 0.8) { mx = wx / wd; mz = wz / wd; sp = this.speed * 0.28; this.faceTo(Math.atan2(wx, wz), dt, 4); }
-        if (!P.dead && (dist < def.aggro || this.provoked)) { this.setState('chase'); if (dist < 40) sfxAt(def.flee ? 'pickup' : 'growl', this.pos.x, this.pos.y, this.pos.z); }
+        if (wd > 0.8) { mx = wx / wd; mz = wz / wd; sp = this.speed * (this.calmT > 0 ? 0.5 : 0.28); td = wd; this.faceTo(Math.atan2(wx, wz), dt, 4); }
+        if (!P.dead && ((dist < def.aggro && this.calmT <= 0) || this.provoked)) { this.setState('chase'); if (dist < 40) sfxAt(def.flee ? 'pickup' : 'growl', this.pos.x, this.pos.y, this.pos.z); }
         break;
       }
       case 'chase': {
@@ -2818,13 +2859,25 @@ class Enemy {
         if (def.ranged) {
           const want = def.range * 0.68;
           this.strafeT -= dt; if (this.strafeT <= 0) { this.strafeT = rand(1.5, 4); this.strafe *= -1; }
-          if (dist > want + 3) { mx = dx * inv; mz = dz * inv; sp = this.speed; }
+          if (dist > want + 3) { mx = dx * inv; mz = dz * inv; sp = this.speed; closing = true; }
           else if (dist < want - 5) { mx = -dx * inv; mz = -dz * inv; sp = this.speed * 0.9; }
           else { mx = -dz * inv * this.strafe; mz = dx * inv * this.strafe; sp = this.speed * 0.55; }
           if (dist < def.range && this.cd <= 0) this.beginAttack();
         } else {
-          if (dist > def.range * 0.75) { mx = dx * inv; mz = dz * inv; sp = this.speed; }
+          if (dist > def.range * 0.75) { mx = dx * inv; mz = dz * inv; sp = this.speed; closing = true; }
           if (dist < def.range && this.cd <= 0 && Math.abs(P.pos.y - this.pos.y) < 3) this.beginAttack();
+        }
+        if (!def.fly && !def.id && this.state === 'chase') {
+          if (this.detourT > 0) {
+            // walking to a detour point picked after getting stuck
+            this.detourT -= dt;
+            const ex = this.dtx - this.pos.x, ez = this.dtz - this.pos.z, ed = Math.hypot(ex, ez);
+            if (ed < 1.2 || dist < def.range) this.detourT = 0;
+            else { mx = ex / ed; mz = ez / ed; sp = this.speed; td = ed; this.faceTo(Math.atan2(ex, ez), dt, 6); }
+          } else {
+            if (this.detours && dist < this.detourD - 3) this.detours = 0;
+            if (this.trackStuck(dt, dist, closing, sp * slow)) this.startDetour(Math.atan2(dx, dz), dist);
+          }
         }
         break;
       }
@@ -2839,7 +2892,80 @@ class Enemy {
         if (this.t > 0.5) { this.setState('chase'); this.cd = def.cd * rand(0.8, 1.25) * (this.affix && this.affix.cd || 1); }
         break;
     }
+    if (sp > 0 && !def.fly && !def.id) { const a = this.steer(mx, mz, sp, dt, td); mx = Math.sin(a); mz = Math.cos(a); }
     this.move(mx, mz, sp * slow, dt);
+  }
+  // clear distance along heading a (up to L) for this creature's body, stopping at colliders and lava
+  probe(a, L) {
+    const sx = Math.sin(a), sz = Math.cos(a), rad = this.r * 0.8 + 0.05, y = this.pos.y;
+    for (let d = 0.8; d < L + 0.4; d += 0.6) {
+      const t = Math.min(d, L), x = this.pos.x + sx * t, z = this.pos.z + sz * t;
+      if (circleBlocked(x, y, z, rad) || isLava(x, z) || Math.hypot(x, z) > 372) return Math.max(0, t - 0.6);
+    }
+    return L;
+  }
+  // local steering: keep the wanted heading if it is clear; otherwise turn the least amount that is clear,
+  // to one side, and stick with that side for a moment so the creature walks around instead of jittering
+  steer(mx, mz, sp, dt, td) {
+    const a0 = Math.atan2(mx, mz);
+    this.probeT -= dt; this.steerT -= dt;
+    if (this.steerT <= 0) this.steerSide = 0;
+    if (this.probeT <= 0) {
+      this.probeT = 0.1;
+      const L = Math.max(0.8, Math.min(td - 0.3, clamp(sp * 0.5, 2, 4) + this.r)), ok = L * 0.98;
+      let off = 0;
+      if (this.probe(a0, L) < ok) {
+        const ANG = Enemy.STEER_ANG;
+        let side = this.steerSide;
+        if (!side) {
+          for (let i = 0; i < ANG.length && !side; i++) {
+            const l = this.probe(a0 + ANG[i], L), r = this.probe(a0 - ANG[i], L);
+            if (l >= ok || r >= ok) side = l > r ? 1 : r > l ? -1 : this.strafe;
+          }
+          if (!side) side = this.strafe;
+        }
+        off = side * ANG[ANG.length - 1];
+        for (let i = 0; i < ANG.length; i++) if (this.probe(a0 + side * ANG[i], L) >= ok) { off = side * ANG[i]; break; }
+        this.steerSide = side; this.steerT = 1.1;
+      }
+      this.steerOff = off;
+    }
+    this.steerA += (this.steerOff - this.steerA) * Math.min(1, 12 * dt);
+    const a = a0 + this.steerA;
+    if (Math.abs(this.steerA) > 0.5) this.faceTo(a, dt, 5);
+    return a;
+  }
+  // true once the creature has spent ~3 s trying to close in without getting anywhere
+  trackStuck(dt, dist, closing, sp) {
+    let c = this.prog;
+    if (!closing || !c) { c = this.prog = { t: 0, x: this.pos.x, z: this.pos.z, d: dist, px: P.pos.x, pz: P.pos.z, exp: 0 }; if (!closing) { this.stuckT = 0; return false; } }
+    c.t += dt; c.exp += sp * dt;
+    if (c.t < 1) return false;
+    const moved = Math.hypot(this.pos.x - c.x, this.pos.z - c.z), pm = Math.hypot(P.pos.x - c.px, P.pos.z - c.pz);
+    const stalled = moved < c.exp * 0.3 || (c.d - dist < 0.4 && pm < 2.5);
+    this.stuckT = stalled ? this.stuckT + c.t : 0;
+    c.t = 0; c.x = this.pos.x; c.z = this.pos.z; c.d = dist; c.px = P.pos.x; c.pz = P.pos.z; c.exp = 0;
+    return this.stuckT >= 3;
+  }
+  // stuck: walk to a clear point off to one side, then try again; after a few failed detours give up and go home
+  startDetour(a0, dist) {
+    this.stuckT = 0; this.prog = null;
+    if (!this.detours) this.detourD = dist;
+    if (++this.detours > 3) {
+      this.detours = 0; this.provoked = false; this.calmT = 8; this.setState('idle');
+      this.wx = this.home.x; this.wz = this.home.z; this.wanderT = 8;
+      return;
+    }
+    const first = -(this.steerSide || this.strafe), D = 7 + this.r * 2;
+    let ba = a0 + first * 1.6, bl = -1;
+    search: for (const k of [1.3, 1.7, 2.1, 2.6, 0.9]) for (const s of [first, -first]) {
+      const a = a0 + s * k, l = this.probe(a, D);
+      if (l > bl + 0.5) { bl = l; ba = a; }
+      if (l >= D * 0.95) break search;
+    }
+    const d = Math.max(2, Math.min(D, bl));
+    this.dtx = this.pos.x + Math.sin(ba) * d; this.dtz = this.pos.z + Math.cos(ba) * d;
+    this.detourT = 2.5; this.steerSide = 0; this.steerT = 0;
   }
   beginAttack() {
     this.setState('windup');
@@ -2849,7 +2975,7 @@ class Enemy {
       sfxAt('windup', this.pos.x, this.pos.y, this.pos.z);
       telegraph(fx, fz, 4.8, def.windup, ELEM[this.el].light, (x, z, r) => {
         if (self.state === 'dead' || self.state === 'gone') return;
-        const y = heightAt(x, z);
+        const y = Math.max(heightAt(x, z), WATER_Y - 1.25);
         dust(x, y, z, 26, r * 0.7, 2.2); burst(x, y + 0.3, z, self.el, 24, 7, 0.6, 0.6, 6, 3);
         sfxAt('slam', x, y, z); addShake(clamp(1 - self.dist / 30, 0, 1) * 0.6);
         if (Math.hypot(P.pos.x - x, P.pos.z - z) < r + 0.3 && P.pos.y - y < 1.4) P.hurt(self.dmg, x, z, { knock: 9, up: 4.5, src: self });
@@ -2879,6 +3005,9 @@ class Enemy {
   }
   move(mx, mz, sp, dt) {
     let sx = 0, sz = 0;
+    // ground creatures (not keepers) wade and swim after the player, slowed like the player is
+    const swims = !this.def.fly && !this.def.id;
+    if (swims) { const g0 = heightAt(this.pos.x, this.pos.z); if (g0 < WATER_Y - 0.25) sp *= g0 < WATER_Y - this.swimD ? 0.55 : 0.72; }
     const en = G.enemies;
     for (let i = 0; i < en.length; i++) {
       const o = en[i]; if (o === this || o.state === 'dead') continue;
@@ -2889,7 +3018,12 @@ class Enemy {
     if (!this.def.fly) { const ox = this.pos.x - P.pos.x, oz = this.pos.z - P.pos.z, d2 = ox * ox + oz * oz, rr = this.r + 0.4; if (d2 < rr * rr && d2 > 1e-4 && Math.abs(P.pos.y - this.pos.y) < 2) { const d = Math.sqrt(d2), push = (rr - d) / d; sx += ox * push; sz += oz * push; } }
     let nx = this.pos.x + (mx * sp + this.kx) * dt + sx * 0.35, nz = this.pos.z + (mz * sp + this.kz) * dt + sz * 0.35;
     const kd = Math.exp(-5 * dt); this.kx *= kd; this.kz *= kd;
-    if (!this.def.fly && heightAt(nx, nz) < -0.9) { nx = this.pos.x; nz = this.pos.z; }
+    if (swims) {
+      // lava is off-limits; slide along its edge, and let a creature already in it climb out
+      const px = this.pos.x, pz = this.pos.z, inLava = isLava(px, pz), h0 = heightAt(px, pz);
+      const bad = (x, z) => isLava(x, z) && !(inLava && heightAt(x, z) >= h0 - 1e-3);
+      if (bad(nx, nz)) { if (!bad(nx, pz)) nz = pz; else if (!bad(px, nz)) nx = px; else { nx = px; nz = pz; } }
+    } else if (!this.def.fly && heightAt(nx, nz) < -0.9) { nx = this.pos.x; nz = this.pos.z; }
     const rr = Math.hypot(nx, nz); if (rr > 372) { nx *= 372 / rr; nz *= 372 / rr; }
     if (this.zone) { const zx = nx - this.zone.x, zz = nz - this.zone.z, zd = Math.hypot(zx, zz), lim = this.zone.r - this.r * 0.6; if (zd > lim) { nx = this.zone.x + zx / zd * lim; nz = this.zone.z + zz / zd * lim; } }
     _et.set(nx, this.pos.y, nz);
@@ -2897,7 +3031,7 @@ class Enemy {
     const moved = Math.hypot(_et.x - this.pos.x, _et.z - this.pos.z) / Math.max(dt, 1e-4);
     this.animSpeed = damp(this.animSpeed, moved, 10, dt); this.walk += moved * dt * this.def.stride;
     this.pos.x = _et.x; this.pos.z = _et.z;
-    const gh = Math.max(heightAt(this.pos.x, this.pos.z), WATER_Y - 0.4);
+    const gh = Math.max(heightAt(this.pos.x, this.pos.z), WATER_Y - (swims ? this.swimD : 0.4));
     if (this.def.fly) this.pos.y = damp(this.pos.y, gh + this.def.fly + Math.sin(G.time * 2 + this.seed) * 0.3, 4, dt);
     else this.pos.y = gh;
   }
@@ -2935,6 +3069,7 @@ class Enemy {
     const i = G.enemies.indexOf(this); if (i >= 0) G.enemies.splice(i, 1);
   }
 }
+Enemy.STEER_ANG = [0.4, 0.75, 1.1, 1.45, 1.8, 2.2, 2.6];
 function spawnEnemy(type, x, z, level, o) { return new Enemy(E_DEF[type], type, x, z, Math.max(1, level | 0), o); }
 
 // ---------------------------------------------------------------- BOSSES
@@ -3278,7 +3413,7 @@ function spellUnlocked(sp) { return !!P.unlocked[sp.id]; }
 function addShake(v) { G.shake = Math.min(1.3, G.shake + v); }
 
 // ---------------------------------------------------------------- INPUT
-const IN = { keys: {}, fire: false, alt: false, mx: 0, my: 0, sx: 0, sy: 0, look: null, locked: false, lockedOnce: false, sens: 1 };
+const IN = { keys: {}, fire: false, alt: false, mx: 0, my: 0, sx: 0, sy: 0, look: null, locked: false, lockedOnce: false, sens: 1, invY: false };
 function wantLock() { const c = $('view'); if (G.touch || document.pointerLockElement === c) return; try { const r = c.requestPointerLock(); if (r && r.catch) r.catch(() => { }); } catch (e) { } }
 function releaseLock() { if (document.pointerLockElement) try { document.exitPointerLock(); } catch (e) { } }
 function initInput() {
@@ -3607,8 +3742,9 @@ function updatePlayer(dt) {
   // without mouse capture, resting the cursor near a side edge keeps the view turning
   if (!IN.locked && !IN.lockedOnce && !G.touch && IN.px !== undefined) { if (IN.px < 0.08) IN.mx -= (0.08 - IN.px) / 0.08 * 900 * dt; else if (IN.px > 0.92) IN.mx += (IN.px - 0.92) / 0.08 * 900 * dt; }
   if (!P.dead) {
-    P.yaw -= IN.mx * sens; P.pitch = clamp(P.pitch - IN.my * sens, -1.5, 1.5);
-    P.swayX = clamp(P.swayX + IN.mx * 0.00035, -0.06, 0.06); P.swayY = clamp(P.swayY + IN.my * 0.00035, -0.06, 0.06);
+    const my = IN.invY ? -IN.my : IN.my; // Invert Y applies to mouse and touch look alike
+    P.yaw -= IN.mx * sens; P.pitch = clamp(P.pitch - my * sens, -1.5, 1.5);
+    P.swayX = clamp(P.swayX + IN.mx * 0.00035, -0.06, 0.06); P.swayY = clamp(P.swayY + my * 0.00035, -0.06, 0.06);
   }
   IN.mx = IN.my = 0;
   // timers
@@ -4451,14 +4587,24 @@ function bindUI() {
   $('b-how').addEventListener('click', () => { openPause(); });
   $('o-quality').addEventListener('change', e => setQuality(+e.target.value, true));
   $('o-vol').addEventListener('input', e => { setVolume(e.target.value / 100); savePrefs(); });
+  $('o-mus').addEventListener('input', e => { setMix(e.target.value / 100, AU.fx); savePrefs(); });
+  $('o-sfx').addEventListener('input', e => { setMix(AU.mus, e.target.value / 100); savePrefs(); });
+  $('o-invy').addEventListener('change', e => { IN.invY = e.target.checked; savePrefs(); });
+  $('o-fps').addEventListener('change', e => { G.showFps = e.target.checked; showFps(); savePrefs(); });
   $('o-sens').addEventListener('input', e => { IN.sens = e.target.value / 100; savePrefs(); });
   $('o-fov').addEventListener('input', e => { G.fov = +e.target.value; camera.fov = G.fov; camera.updateProjectionMatrix(); savePrefs(); });
 }
-function savePrefs() { try { localStorage.setItem('wyrdmoor.prefs', JSON.stringify({ q: G.quality, vol: AU.vol, sens: IN.sens, fov: G.fov, qSet: G.qSet })); } catch (e) { } }
+function savePrefs() { try { localStorage.setItem('wyrdmoor.prefs', JSON.stringify({ q: G.quality, vol: AU.vol, mus: AU.mus, sfx: AU.fx, sens: IN.sens, fov: G.fov, qSet: G.qSet, invY: IN.invY, fps: G.showFps })); } catch (e) { } }
 function loadPrefs() {
-  try { const p = JSON.parse(localStorage.getItem('wyrdmoor.prefs') || 'null'); if (p) { if (p.qSet) { G.quality = clamp(p.q | 0, 0, 3); G.qSet = true; } AU.vol = p.vol ?? 0.7; IN.sens = p.sens || 1; G.fov = p.fov || 75; } } catch (e) { }
+  // keys added later (mus, sfx, invY, fps) may be missing from older saves; each falls back on its own
+  const lvl = (v, d) => typeof v === 'number' && isFinite(v) ? clamp(v, 0, 1) : d;
+  try { const p = JSON.parse(localStorage.getItem('wyrdmoor.prefs') || 'null'); if (p && typeof p === 'object') { if (p.qSet) { G.quality = clamp(p.q | 0, 0, 3); G.qSet = true; } AU.vol = lvl(p.vol, 0.7); AU.mus = lvl(p.mus, 1); AU.fx = lvl(p.sfx, 1); IN.sens = p.sens || 1; G.fov = p.fov || 75; IN.invY = p.invY === true; G.showFps = p.fps === true; } } catch (e) { }
   $('o-vol').value = Math.round(AU.vol * 100); $('o-sens').value = Math.round(IN.sens * 100); $('o-fov').value = G.fov;
+  $('o-mus').value = Math.round(AU.mus * 100); $('o-sfx').value = Math.round(AU.fx * 100);
+  $('o-invy').checked = IN.invY; $('o-fps').checked = !!G.showFps; showFps();
 }
+// frame-rate readout in the bottom-left HUD corner, refreshed whenever main.js measures G.fps
+function showFps() { const el = $('fps'); el.hidden = !G.showFps; if (G.showFps) el.textContent = (G.fps ? Math.round(G.fps) : '--') + ' FPS'; }
 
 // ===================================================================
 //  MAIN: boot, loop, quality, ambience, zones
@@ -4612,7 +4758,7 @@ function frame() {
 function runFrame(rdt) {
   fAcc += rdt; fN++;
   if (fAcc > 1.5) {
-    const fps = fN / fAcc; fAcc = 0; fN = 0; G.fps = fps;
+    const fps = fN / fAcc; fAcc = 0; fN = 0; G.fps = fps; if (G.showFps) showFps();
     if (G.dyn && G.running && !G.paused && G.time > 6) {
       if (fps < 43 && G.dynScale > 0.56) { G.dynScale = Math.max(0.55, G.dynScale - 0.12); applyRes(); }
       else if (fps > 58.5 && G.dynScale < 1) { G.dynScale = Math.min(1, G.dynScale + 0.06); applyRes(); }
@@ -4680,7 +4826,7 @@ async function init(hot) {
   else $('title').hidden = false;
   requestAnimationFrame(frame);
 }
-window.wyrdmoor = { run: runFrame, IN, DIR, G, P, S, ZONES, spawnEnemy, spawnGroup, ENC, startGame, heightAt, giveRelic, RELICS, gainXP, snapshot, setQuality, openPause, QUALITY, get camera() { return camera; }, get renderer() { return renderer; } };
+window.wyrdmoor = { run: runFrame, IN, DIR, G, P, S, AU, ZONES, COL, SITES, isLava, biomeAt, WATER_Y, spawnEnemy, spawnGroup, ENC, startGame, heightAt, giveRelic, RELICS, gainXP, snapshot, setQuality, openPause, QUALITY, get camera() { return camera; }, get renderer() { return renderer; } };
 const hotApi = window.claude && window.claude.hot;
 if (hotApi && hotApi.snapshot) { try { hotApi.snapshot(() => (G.running ? snapshot() : {})); } catch (e) { } }
 const boot = data => init(data || {}).catch(e => { console.error(e); $('loadmsg').textContent = 'Could not start: ' + e.message; });
