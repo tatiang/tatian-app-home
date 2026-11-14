@@ -173,6 +173,7 @@ body:not(.touch) #touch{display:none}
 .opt select,.opt input[type=range]{accent-color:var(--gilt);background:var(--ink-3);color:var(--bone);border:1px solid var(--gilt-dim);padding:5px 8px;font:inherit;min-width:150px}
 .opt input[type=range]{padding:0}
 .opt input[type=checkbox]{accent-color:var(--gilt);width:20px;height:20px;margin:0 2px}
+.panel p.build{margin:18px 0 0;font-size:12px;letter-spacing:.08em;color:var(--bone-dim);opacity:.8}
 
 /* title */
 #title{flex-direction:column;justify-content:flex-end;align-items:flex-start;background:linear-gradient(180deg,rgba(7,9,13,.25),rgba(7,9,13,0) 30%,rgba(7,9,13,.82) 82%);padding-bottom:max(5vh,var(--sb))}
@@ -305,6 +306,8 @@ body.touch #vitals{top:calc(var(--st) + 56px)}
       <div class="opt"><label for="o-fov">Field of view</label><input id="o-fov" type="range" min="60" max="100" value="75"></div>
       <div class="opt"><label for="o-invy">Invert look up/down</label><input id="o-invy" type="checkbox"></div>
       <div class="opt"><label for="o-fps">Show frame rate</label><input id="o-fps" type="checkbox"></div>
+      <!-- build stamp: tools/build.sh and tools/build-site.py fill in the source commit and its date -->
+      <p class="build" id="build">Build c69e605 · 14 Nov 2026</p>
     </div>
   </div>
 
