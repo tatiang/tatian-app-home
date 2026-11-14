@@ -307,7 +307,7 @@ body.touch #vitals{top:calc(var(--st) + 56px)}
       <div class="opt"><label for="o-invy">Invert look up/down</label><input id="o-invy" type="checkbox"></div>
       <div class="opt"><label for="o-fps">Show frame rate</label><input id="o-fps" type="checkbox"></div>
       <!-- build stamp: tools/build.sh and tools/build-site.py fill in the source commit and its date -->
-      <p class="build" id="build">Build c69e605 · 14 Nov 2026</p>
+      <p class="build" id="build">Build b829636 · 14 Nov 2026</p>
     </div>
   </div>
 
@@ -2283,7 +2283,8 @@ const SFX = {
   pulse: o => { tone(210, 0.3, 'sine', 0.4, { to: 55, ...o }); noise(0.25, 0.3, { f0: 700, f1: 150, ...o }); },
   hit: o => { noise(0.07, 0.3, { f0: 1900, q: 1.5, ...o }); tone(250, 0.08, 'square', 0.08, { to: 110, ...o }); },
   crit: o => { noise(0.1, 0.4, { f0: 2600, q: 1.5, ...o }); tone(880, 0.14, 'triangle', 0.14, { to: 440, ...o }); },
-  kill: o => { tone(320, 0.35, 'sawtooth', 0.12, { to: 70, lp: 1200, ...o }); noise(0.3, 0.2, { f0: 900, f1: 200, ...o }); },
+  // the spirit leaving a slain creature; each creature also has its own death cry (CREATURE SOUNDS below)
+  kill: o => { noise(0.55, 0.16, { f0: 500, f1: 2600, q: 1.4, attack: 0.04, rev: 0.4, ...o }); noise(0.3, 0.07, { type: 'highpass', f0: 5000, when: 0.05, ...o }); },
   hurt: o => { tone(170, 0.22, 'sawtooth', 0.28, { to: 80, lp: 900, ...o }); noise(0.14, 0.3, { type: 'lowpass', f0: 800, ...o }); },
   coin: o => { tone(1320, 0.07, 'sine', 0.13, o); tone(1760, 0.14, 'sine', 0.13, { when: 0.06, ...o }); },
   pickup: o => { tone(620, 0.16, 'sine', 0.16, { to: 980, ...o }); },
@@ -2296,10 +2297,9 @@ const SFX = {
   splash: o => { noise(0.25, 0.12, { f0: rand(900, 1600), q: 0.7, ...o }); },
   jump: o => { noise(0.1, 0.08, { type: 'lowpass', f0: 500, ...o }); },
   land: o => { tone(90, 0.12, 'sine', 0.25, { to: 45, ...o }); noise(0.1, 0.14, { type: 'lowpass', f0: 600, ...o }); },
-  roar: o => { tone(78, 1.5, 'sawtooth', 0.4, { to: 42, lp: 500, rev: 0.7, ...o }); tone(117, 1.3, 'sawtooth', 0.2, { to: 60, lp: 700, ...o }); noise(1.2, 0.3, { type: 'lowpass', f0: 500, f1: 120, ...o }); },
+  roar: o => beastRoar(o, 1),
   slam: o => { tone(65, 0.7, 'sine', 0.8, { to: 26, ...o }); noise(0.6, 0.6, { type: 'lowpass', f0: 500, f1: 70, ...o }); },
   shoot: o => { tone(540, 0.2, 'square', 0.07, { to: 240, lp: 1500, ...o }); },
-  growl: o => { tone(115, 0.4, 'sawtooth', 0.14, { to: 68, lp: 600, ...o }); },
   windup: o => { tone(120, 0.5, 'sawtooth', 0.1, { to: 320, lp: 900, ...o }); },
   spawn: o => { noise(0.5, 0.2, { f0: 200, f1: 1600, q: 2, rev: 0.5, ...o }); },
   ui: o => { tone(880, 0.05, 'sine', 0.08, o); },
@@ -2308,6 +2308,226 @@ const SFX = {
   victory: o => { [294, 370, 440, 587, 740, 880, 1175].forEach((f, i) => tone(f, 2.4, 'triangle', 0.13, { when: i * 0.16, rev: 1, ...o })); },
   bell: o => { tone(196, 3, 'sine', 0.3, { rev: 1, ...o }); tone(392.5, 2.4, 'sine', 0.12, { rev: 1, ...o }); tone(587, 1.6, 'sine', 0.06, { rev: 1, ...o }); },
 };
+// ===================================================================
+//  CREATURE SOUNDS
+//  voice(): a buzzy (vocal folds) and/or breathy (air) source, optionally
+//  overdriven for growl, through parallel band-pass "formant" filters that
+//  shape it like a throat, with pitch and loudness drawn as curves so each
+//  call has natural wobble, roughness and contour. grains(), metal() and
+//  chime() add gravel, armour and glassy textures. All creature sounds take
+//  o.pitch (per-creature size/variation) and o.bus/o.gain from voiceAt().
+// ===================================================================
+function crv(n, fn) { const a = new Float32Array(n); for (let i = 0; i < n; i++) a[i] = fn(i / (n - 1)); return a; }
+// smooth random wobble in -1..1 (three sines at random rates and phases)
+function wobble(k = 1) { const r = [rand(3, 6) * k, rand(8, 13) * k, rand(15, 24) * k], p = [rand(TAU), rand(TAU), rand(TAU)]; return t => 0.5 * Math.sin(t * r[0] * TAU + p[0]) + 0.3 * Math.sin(t * r[1] * TAU + p[1]) + 0.2 * Math.sin(t * r[2] * TAU + p[2]); }
+// loudness envelope: rise over the first a of the sound, then fall with curve r
+const env = (a, r = 1.5) => u => u < a ? u / a : Math.pow(Math.max(0, (1 - u) / (1 - a)), r);
+// throat roughness: fast loudness flutter (rate Hz, depth 0..1) that growls and snarls ride on
+const rough = (rate, depth, w) => t => 1 - depth * (0.5 + 0.5 * Math.sin(TAU * rate * t + (w ? 2 * w(t) : 0)));
+const _grit = {};
+function gritCurve(k) { if (_grit[k]) return _grit[k]; const a = new Float32Array(1024), d = Math.tanh(k); for (let i = 0; i < 1024; i++) a[i] = Math.tanh(k * (i / 1023 * 2 - 1)) / d; return (_grit[k] = a); }
+// smoothed random series in about -1..1, k = smoothing (0 = white)
+function jitter(n, k) { const a = new Float32Array(n); let v = 0; for (let i = 0; i < n; i++) { v = v * k + (Math.random() * 2 - 1) * (1 - k); a[i] = v; } let m = 1e-6; for (let i = 0; i < n; i++) m = Math.max(m, Math.abs(a[i])); for (let i = 0; i < n; i++) a[i] /= m; return a; }
+// o: dur, vol, f(u,t) pitch in Hz, a(u,t) loudness 0..1, form [[startHz, endHz, Q, gain]...],
+//    voiced (buzz level, 0 = whisper), breath (noise level), grit (overdrive), wave, pitch, when, bus, gain, rev,
+//    jit (fast irregular pitch, the thing that makes a throat not sound like an instrument), sub (octave-down roughness), shim (loudness flutter)
+function voice(o) {
+  if (!AU.on) return;
+  const ctx = AU.ctx, dur = o.dur, t0 = ctx.currentTime + (o.when || 0), n = Math.max(16, Math.ceil(dur * 500));
+  const pm = o.pitch || 1, fm = Math.sqrt(pm), vol = (o.vol || 0.2) * (o.gain || 1);
+  const jit = o.jit === undefined ? 0.015 : o.jit, shim = o.shim === undefined ? 0.12 : o.shim;
+  const mix = ctx.createGain(), srcs = [];
+  if (o.voiced !== 0) {
+    const jr = jitter(n, 0.55), pc = crv(n, u => Math.max(5, o.f(u, u * dur) * pm));
+    for (let i = 0; i < n; i++) pc[i] *= 1 + jit * jr[i];
+    const os = ctx.createOscillator(); os.type = o.wave || 'sawtooth';
+    os.frequency.value = pc[0]; os.frequency.setValueCurveAtTime(pc, t0, dur);
+    const g = ctx.createGain(); g.gain.value = o.voiced === undefined ? 1 : o.voiced; os.connect(g); g.connect(mix); srcs.push(os);
+    if (o.sub) {
+      const sc = pc.map(f => f * 0.5), so = ctx.createOscillator(); so.type = o.wave || 'sawtooth';
+      so.frequency.value = sc[0]; so.frequency.setValueCurveAtTime(sc, t0, dur);
+      const sg = ctx.createGain(); sg.gain.value = o.sub * g.gain.value; so.connect(sg); sg.connect(mix); srcs.push(so);
+    }
+  }
+  if (o.breath) { const s = ctx.createBufferSource(); s.buffer = AU.noiseBuf; s.loop = true; const g = ctx.createGain(); g.gain.value = o.breath; s.connect(g); g.connect(mix); srcs.push(s); }
+  let src = mix;
+  if (o.grit) { const ws = ctx.createWaveShaper(); ws.curve = gritCurve(o.grit); ws.oversample = '2x'; src.connect(ws); src = ws; }
+  const out = ctx.createGain(); out.gain.value = 0;
+  for (const [f0, f1, q, gn] of o.form) {
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = q;
+    bp.frequency.setValueAtTime(f0 * fm, t0); if (f1 !== f0) bp.frequency.linearRampToValueAtTime(f1 * fm, t0 + dur);
+    const g = ctx.createGain(); g.gain.value = gn; src.connect(bp); bp.connect(g); g.connect(out);
+  }
+  const sr = jitter(n, 0.7), ac = crv(n, u => Math.max(0, o.a(u, u * dur)) * vol);
+  for (let i = 0; i < n; i++) ac[i] *= Math.max(0, 1 + shim * sr[i]);
+  out.gain.setValueCurveAtTime(ac, t0, dur);
+  outNode(out, o);
+  for (const s of srcs) { if (s.buffer) s.start(t0, Math.random() * 1.5); else s.start(t0); s.stop(t0 + dur + 0.02); }
+}
+// copy of o with extra settings and an added delay (keeps o's bus, gain and pitch)
+const at = (o, w, x) => Object.assign({}, o, x, { when: (o.when || 0) + w });
+// gravel, crackle, bone rattle: count short noise grains spread over [t0, t1], density falling with fall
+function grains(o, t0, t1, count, fLo, fHi, vol, len = 0.03, fall = 1, type = 'bandpass') {
+  for (let i = 0; i < count; i++) {
+    const u = Math.pow(Math.random(), fall), w = t0 + (t1 - t0) * u;
+    noise(len * rand(0.5, 1.6), vol * rand(0.4, 1) * (1 - 0.6 * u), at(o, w, { type, f0: rand(fLo, fHi), q: rand(1.5, 4), attack: 0.002 }));
+  }
+}
+// struck armour or blade: inharmonic partials of a metal plate
+function metal(o, w, f, vol, dur = 0.35) {
+  [[1, 1], [2.76, 0.55], [5.4, 0.35], [8.93, 0.2]].forEach(([k, g]) => tone(f * k, dur * (1.2 - k * 0.08), 'sine', vol * g, at(o, w, { attack: 0.002 })));
+  noise(0.025, vol * 1.6, at(o, w, { type: 'highpass', f0: 3500 }));
+}
+// glassy ping for spirits and sprites
+function chime(o, w, f, vol, dur = 0.6) { tone(f, dur, 'sine', vol, at(o, w, { attack: 0.004, rev: 0.9 })); tone(f * 2.76, dur * 0.5, 'sine', vol * 0.35, at(o, w, { attack: 0.004, rev: 0.9 })); }
+// a heavy body hitting the ground
+function thud(o, w, vol = 0.3) { tone(85, 0.2, 'sine', vol, at(o, w, { to: 42 })); noise(0.14, vol * 0.7, at(o, w, { type: 'lowpass', f0: 380 })); }
+
+// ---- hound: Gloomhound, Mirehound, Cinderhound — barks, snarls, yelps
+function bark(o, w = 0, k = 1) {
+  noise(0.05, 0.16 * k, at(o, w, { type: 'lowpass', f0: 900 })); // chest huff
+  const hi = rand(520, 600);
+  voice(at(o, w, { dur: rand(0.16, 0.21), vol: 0.45 * k, grit: 5, breath: 0.8, jit: 0.07, sub: 0.45, shim: 0.25, f: u => u < 0.2 ? 380 + (hi - 380) * u / 0.2 : hi - (hi - 250) * (u - 0.2) / 0.8, a: env(0.06, 1.1),
+    form: [[700, 480, 4, 1], [1250, 980, 5, 1.7], [2600, 2350, 6, 1.4]] }));
+}
+function snarl(o, w = 0, dur = 0.65, k = 1) {
+  const j = wobble(), r = rough(rand(27, 34), 0.75, wobble(0.5));
+  voice(at(o, w, { dur, vol: 0.5 * k, grit: 6, breath: 0.55, jit: 0.05, sub: 0.35, f: (u, t) => 76 * (1 + 0.09 * j(t)) * (1 + 0.1 * Math.sin(Math.PI * u)), a: (u, t) => env(0.15, 0.9)(u) * r(t),
+    form: [[420, 480, 3, 1], [930, 1150, 4, 1.7], [2300, 2550, 5, 1.6]] }));
+  noise(dur, 0.035 * k, at(o, w, { type: 'highpass', f0: 4200, attack: dur * 0.3 })); // bared-teeth hiss
+}
+function yelp(o, w, dur, top, end, k = 1) {
+  voice(at(o, w, { dur, vol: 0.45 * k, grit: 2, breath: 0.4, jit: 0.035, sub: 0.15, shim: 0.2, f: u => u < 0.3 ? 700 + (top - 700) * u / 0.3 : top - (top - end) * (u - 0.3) / 0.7, a: env(0.08, 1.2),
+    form: [[620, 500, 5, 1], [1900, 1650, 6, 2], [3000, 2850, 7, 1.6]] }));
+}
+// ---- wight: Barrow Wight, Drowned Thrall, Ashbound Knight — hollow moans, rasps, armour
+function moan(o, w, dur, f0, f1, k = 1, form) {
+  const j = wobble(0.7);
+  const fn = (u, t) => (f0 + (f1 - f0) * u) * (1 + 0.03 * Math.sin(TAU * 4.5 * t) + 0.05 * j(t));
+  form = form || [[320, 720, 6, 1], [800, 1150, 7, 1.7], [2300, 2550, 8, 1.4]];
+  voice(at(o, w, { dur, vol: 0.5 * k, voiced: 0.45, breath: 1, grit: 2, f: fn, a: env(0.25, 1.2), form, rev: 0.6 }));
+  // a fainter, higher second throat a fifth above: the uncanny part
+  voice(at(o, w, { dur, vol: 0.12 * k, voiced: 0.35, breath: 0.3, f: (u, t) => fn(u, t) * 1.5, a: env(0.35, 1), form: form.map(([a, b, q, g]) => [a * 1.3, b * 1.3, q, g]), rev: 0.8 }));
+}
+function rattle(o, w, n, span, vol = 0.12) { grains(o, w, w + span, n, 2200, 4200, vol, 0.018, 1, 'highpass'); }
+const UH = [[560, 500, 5, 1], [1000, 940, 6, 1.5], [2400, 2350, 7, 1.2]];
+// ---- wisp: spirit lights — whispers and glass
+function whisper(o, w, dur, form, k = 1) { voice(at(o, w, { dur, vol: 0.5 * k, voiced: 0, breath: 1, f: () => 100, a: (u, t) => env(0.3, 1)(u) * (0.75 + 0.25 * Math.sin(TAU * 6 * t)), form, rev: 0.8 })); }
+// ---- golem: stone giants — grinding groans and gravel
+function groan(o, w, dur, f0, f1, k = 1) {
+  const j = wobble(0.8), r = rough(rand(15, 19), 0.6, wobble(0.4));
+  voice(at(o, w, { dur, vol: 0.6 * k, grit: 8, breath: 0.4, jit: 0.05, sub: 0.5, f: (u, t) => (f0 + (f1 - f0) * u) * (1 + 0.1 * j(t)) * (1 + 0.12 * Math.sin(Math.PI * u)), a: (u, t) => env(0.2, 1)(u) * r(t),
+    form: [[260, 300, 3, 1], [620, 560, 4, 1.5], [1500, 1400, 5, 1.2]], rev: 0.5 }));
+}
+// ---- imp: cinder imps — cackles and screeches
+const EH = [[550, 600, 6, 1], [1800, 1900, 7, 2], [2700, 2800, 8, 1.6]], EE = [[420, 440, 6, 1], [2200, 2350, 7, 2], [3100, 3250, 8, 1.6]];
+function cackle(o, w, n, k = 1) {
+  const base = rand(520, 600);
+  for (let i = 0; i < n; i++) {
+    const last = i === n - 1, f0 = base * (1 + 0.05 * i);
+    voice(at(o, w + i * 0.105, { dur: last ? 0.24 : 0.085, vol: 0.3 * k, grit: 3.5, breath: 0.65, jit: 0.05, sub: 0.3, shim: 0.25, f: u => last ? f0 * (1 + 0.35 * u) : f0 * (1.1 - 0.2 * u), a: env(0.15, 1.3), form: last ? EE : EH }));
+  }
+}
+// ---- sprite: the fleeing Gilded Sprite — giggles and sparkles
+const SPRITE_NOTES = [1568, 1760, 2093, 2349, 2637, 3136];
+function giggle(o, w, n, k = 1) {
+  for (let i = 0; i < n; i++) voice(at(o, w + i * 0.12, { dur: 0.09, vol: 0.18 * k, breath: 0.4, f: u => rand(950, 1050) * (1.1 - 0.15 * u), a: env(0.2, 1.4), form: EE.map(([a, b, q, g]) => [a * 1.4, b * 1.4, q, g]) }));
+  for (let i = 0; i < n + 2; i++) chime(o, w + i * 0.07, pick(SPRITE_NOTES) * (o.pitch || 1), 0.035 * k, 0.4);
+}
+// ---- keepers' roars, also the generic ambush roar
+function beastRoar(o, slow = 1) {
+  const j = wobble(0.6), r = rough(rand(20, 25), 0.45, wobble(0.4)), dur = 1.8 * slow;
+  const f = (u, t) => (u < 0.3 ? 62 + 32 * u / 0.3 : 94 - 40 * (u - 0.3) / 0.7) * (1 + 0.07 * j(t)) / Math.sqrt(slow);
+  voice(at(o, 0, { dur, vol: 0.7, grit: 10, breath: 0.5, jit: 0.04, sub: 0.5, f, a: (u, t) => env(0.12, 1)(u) * r(t), form: [[600, 500, 3, 1], [1150, 1000, 4, 1.6], [2500, 2300, 5, 1.4]], rev: 0.7 }));
+  voice(at(o, 0, { dur, vol: 0.35, grit: 4, f: (u, t) => f(u, t) * 0.5, a: env(0.15, 1), form: [[300, 260, 2, 1], [700, 620, 3, 1]], rev: 0.5 }));
+}
+Object.assign(SFX, {
+  hound_alert: o => { bark(o); if (Math.random() < 0.6) bark(at(o, 0.27, {}), 0, 0.85); snarl(o, 0.5, 0.45, 0.6); },
+  hound_chase: o => { bark(o, 0, 0.8); if (Math.random() < 0.4) bark(o, 0.24, 0.7); },
+  hound_idle: o => { if (Math.random() < 0.6) for (let i = 0; i < 4; i++) noise(0.11, 0.16, at(o, i * 0.19, { f0: i % 2 ? 1500 : 1100, q: 1.3, attack: 0.03 })); else snarl(o, 0, 0.5, 0.3); },
+  hound_windup: o => snarl(o, 0, 0.55),
+  hound_strike: o => { noise(0.035, 0.4, at(o, 0, { f0: 2800, q: 1.2 })); noise(0.02, 0.28, at(o, 0.05, { f0: 3600, q: 2 })); voice(at(o, 0, { dur: 0.14, vol: 0.4, grit: 5, breath: 0.7, jit: 0.07, sub: 0.4, shim: 0.25, f: u => 420 - 180 * u, a: env(0.1, 1), form: [[650, 500, 4, 1], [1150, 950, 5, 1.6], [2500, 2300, 6, 1.3]] })); },
+  hound_hurt: o => yelp(o, 0, 0.2, rand(1150, 1350), 750),
+  hound_death: o => {
+    yelp(o, 0, 0.3, 1100, 480);
+    const j = wobble(); voice(at(o, 0.32, { dur: 0.6, vol: 0.18, breath: 0.55, grit: 1.5, jit: 0.03, f: (u, t) => (620 - 240 * u) * (1 + 0.04 * Math.sin(TAU * 7 * t) + 0.03 * j(t)), a: env(0.15, 1.6), form: [[600, 450, 5, 1], [1700, 1400, 6, 2], [2900, 2700, 7, 1.5]] }));
+    thud(o, 0.24, 0.22);
+  },
+  wight_alert: o => moan(o, 0, 1.2, 96, 82),
+  wight_chase: o => moan(o, 0, 0.8, 104, 90, 0.6),
+  wight_idle: o => { if (Math.random() < 0.5) moan(o, 0, 0.9, 90, 80, 0.35); else rattle(o, 0, 7, 0.35, 0.08); },
+  wight_windup: o => { noise(0.45, 0.45, at(o, 0, { f0: 700, f1: 2400, q: 2.5, attack: 0.38 })); noise(0.25, 0.05, at(o, 0.1, { f0: 3200, q: 6 })); rattle(o, 0.05, 4, 0.3, 0.06); },
+  wight_strike: o => { const p = o.pitch || 1; noise(0.2, 0.34, at(o, 0, { f0: 3200, f1: 600, q: 1.1, attack: 0.05 })); metal(o, 0.08, 560 * p, 0.09); voice(at(o, 0, { dur: 0.2, vol: 0.35, breath: 0.7, grit: 3, jit: 0.04, sub: 0.3, f: u => 120 - 25 * u, a: env(0.15, 1.2), form: UH })); },
+  wight_hurt: o => { voice(at(o, 0, { dur: 0.4, vol: 0.4, voiced: 0.6, breath: 0.8, grit: 3, jit: 0.04, sub: 0.3, f: u => 125 - 30 * u, a: env(0.12, 1.4), form: UH })); rattle(o, 0.02, 4, 0.2); },
+  wight_death: o => {
+    const p = o.pitch || 1;
+    moan(o, 0, 1.5, 105, 55, 1, [[750, 320, 6, 1], [1200, 800, 7, 1.7], [2500, 2250, 8, 1.4]]);
+    [480, 620, 410].forEach((f, i) => metal(o, 0.5 + i * 0.17, f * p, 0.07 / (i + 1)));
+    rattle(o, 0.45, 10, 0.6); thud(o, 0.55, 0.2);
+  },
+  wisp_alert: o => { const p = o.pitch || 1; whisper(o, 0, 0.8, [[700, 600, 6, 1], [1200, 1900, 8, 1.8], [2600, 3000, 9, 1.5]]); [1450, 2180, 2910].forEach((f, i) => tone(f * p, 1.0, 'sine', 0.025, at(o, i * 0.06, { attack: 0.2, rev: 1 }))); },
+  wisp_chase: o => whisper(o, 0, 0.5, [[600, 800, 6, 1], [1700, 1300, 8, 1.8], [2800, 2600, 9, 1.5]], 0.5),
+  wisp_idle: o => { const p = o.pitch || 1; chime(o, 0, 1760 * p, 0.03); chime(o, 0.18, 2349 * p, 0.022); whisper(o, 0.05, 0.6, [[500, 700, 6, 1], [1400, 1600, 8, 1.6], [2600, 2700, 9, 1.4]], 0.25); },
+  wisp_windup: o => { const p = o.pitch || 1; tone(600 * p, 0.55, 'sine', 0.06, at(o, 0, { to: 1500 * p, attack: 0.4, rev: 0.8 })); tone(905 * p, 0.55, 'sine', 0.04, at(o, 0, { to: 2260 * p, attack: 0.4, rev: 0.8 })); noise(0.5, 0.1, at(o, 0, { f0: 800, f1: 3000, q: 4, attack: 0.45 })); },
+  wisp_shoot: o => { noise(0.3, 0.3, at(o, 0, { f0: 2400, f1: 500, q: 3 })); tone(950 * (o.pitch || 1), 0.28, 'sine', 0.06, at(o, 0, { to: 320 })); },
+  wisp_hurt: o => { const p = o.pitch || 1; voice(at(o, 0, { dur: 0.22, vol: 0.4, voiced: 0.15, breath: 1, f: () => 520, a: env(0.1, 1.3), form: [[800, 700, 6, 1], [1300, 1200, 8, 1.8], [2700, 2600, 9, 1.4]] })); chime(o, 0, 2100 * p, 0.05, 0.4); },
+  wisp_death: o => { const p = o.pitch || 1; whisper(o, 0, 1.2, [[800, 350, 6, 1], [1600, 700, 8, 1.8], [2800, 2000, 9, 1.5]]); [2637, 2349, 1976, 1568, 1319, 1047].forEach((f, i) => chime(o, 0.1 + i * 0.11, f * p, 0.045 - i * 0.005, 0.7)); },
+  golem_alert: o => { groan(o, 0, 1.3, 46, 40); noise(1.2, 0.2, at(o, 0, { type: 'lowpass', f0: 260, attack: 0.3 })); grains(o, 0.1, 1.1, 22, 700, 2600, 0.1); },
+  golem_chase: o => { groan(o, 0, 0.8, 50, 42, 0.6); grains(o, 0, 0.7, 10, 700, 2400, 0.07); },
+  golem_idle: o => { noise(0.9, 0.3, at(o, 0, { type: 'lowpass', f0: 220, attack: 0.3 })); grains(o, 0.1, 0.8, 9, 600, 2000, 0.12); },
+  golem_windup: o => { noise(0.9, 0.25, at(o, 0, { type: 'lowpass', f0: 200, f1: 600, attack: 0.6 })); grains(o, 0, 0.9, 18, 500, 2200, 0.09); groan(o, 0.1, 0.85, 40, 58, 0.6); },
+  golem_slam: o => { groan(o, 0, 0.35, 55, 40, 0.7); grains(o, 0.05, 1.0, 28, 300, 1800, 0.16, 0.05, 1.8); },
+  golem_hurt: o => { noise(0.06, 0.8, at(o, 0, { type: 'highpass', f0: 1800 })); noise(0.25, 0.5, at(o, 0, { type: 'lowpass', f0: 500 })); grains(o, 0.02, 0.35, 8, 800, 2600, 0.25); groan(o, 0, 0.3, 50, 44, 0.4); },
+  golem_death: o => { groan(o, 0, 1.6, 52, 28); grains(o, 0.2, 2.0, 60, 250, 2200, 0.18, 0.05, 1.6); thud(o, 0.5, 0.35); thud(o, 1.0, 0.3); thud(o, 1.45, 0.22); },
+  golem_step: o => { thud(o, 0, 0.28); grains(o, 0.02, 0.2, 3, 500, 1500, 0.05); },
+  imp_alert: o => cackle(o, 0, randi(4, 6)),
+  imp_chase: o => cackle(o, 0, 3, 0.7),
+  imp_idle: o => { if (Math.random() < 0.5) cackle(o, 0, 2, 0.4); else grains(o, 0, 0.6, 10, 2500, 5000, 0.12, 0.015, 1, 'highpass'); },
+  imp_windup: o => { cackle(o, 0, 2, 0.7); grains(o, 0, 0.45, 9, 2500, 5000, 0.07, 0.015, 1, 'highpass'); },
+  imp_shoot: o => { voice(at(o, 0, { dur: 0.1, vol: 0.3, grit: 3, breath: 0.55, jit: 0.05, sub: 0.25, f: u => 600 + 150 * u, a: env(0.2, 1), form: EH })); noise(0.35, 0.28, at(o, 0.03, { f0: 500, f1: 1600, q: 1.5 })); noise(0.3, 0.18, at(o, 0.03, { type: 'lowpass', f0: 300 })); },
+  imp_hurt: o => voice(at(o, 0, { dur: 0.2, vol: 0.4, grit: 3, breath: 0.55, jit: 0.05, sub: 0.25, f: u => u < 0.35 ? 900 + 450 * u / 0.35 : 1350 - 500 * (u - 0.35) / 0.65, a: env(0.1, 1.2), form: EE })),
+  imp_death: o => { voice(at(o, 0, { dur: 0.32, vol: 0.4, grit: 3, breath: 0.55, jit: 0.05, sub: 0.2, f: u => 800 + 900 * u * u, a: env(0.1, 0.6), form: EE })); noise(0.08, 0.45, at(o, 0.3, { f0: 1200, q: 0.7 })); noise(0.6, 0.15, at(o, 0.33, { type: 'highpass', f0: 3000, f1: 6000 })); grains(o, 0.33, 0.9, 14, 2500, 5500, 0.08, 0.015, 1.5, 'highpass'); },
+  sprite_alert: o => giggle(o, 0, 3),
+  sprite_chase: o => giggle(o, 0, 2, 0.6),
+  sprite_hurt: o => { voice(at(o, 0, { dur: 0.12, vol: 0.25, breath: 0.4, f: u => 1300 + 600 * u, a: env(0.15, 1), form: EE.map(([a, b, q, g]) => [a * 1.4, b * 1.4, q, g]) })); chime(o, 0, 3136 * (o.pitch || 1), 0.04, 0.4); },
+  sprite_death: o => { const p = o.pitch || 1; for (let i = 0; i < 12; i++) chime(o, i * 0.06, pick(SPRITE_NOTES) * p * (i % 3 ? 1 : 2), 0.04, 0.8); noise(0.6, 0.1, at(o, 0, { f0: 1500, f1: 6000, q: 2, rev: 1 })); },
+  // keepers
+  warden_roar: o => {
+    const j = wobble(1.5);
+    voice(at(o, 0, { dur: 1.6, vol: 0.4, wave: 'square', f: (u, t) => 24 + 34 * (0.5 + 0.5 * j(t)), a: env(0.1, 0.8), form: [[650, 700, 12, 1], [1300, 1250, 14, 1.3], [2600, 2500, 14, 1]], rev: 0.6 })); // creaking timber
+    groan(o, 0.05, 1.8, 52, 40, 1.1); noise(1.3, 0.05, at(o, 0.1, { type: 'highpass', f0: 2600, attack: 0.4 })); // rustling leaves
+  },
+  lich_roar: o => {
+    const j = wobble(0.6), f = (u, t) => (u < 0.35 ? 420 + 220 * u / 0.35 : 640 - 280 * (u - 0.35) / 0.65) * (1 + 0.045 * Math.sin(TAU * 5.5 * t) + 0.03 * j(t));
+    const form = [[850, 800, 8, 1], [1600, 1400, 9, 1.8], [2900, 2800, 10, 1.5]];
+    voice(at(o, 0, { dur: 2.0, vol: 0.4, voiced: 0.8, breath: 0.5, f, a: env(0.2, 1), form, rev: 1 }));
+    voice(at(o, 0, { dur: 2.0, vol: 0.22, voiced: 0.8, breath: 0.3, f: (u, t) => f(u, t) * 1.007, a: env(0.25, 1), form, rev: 1 }));
+    voice(at(o, 0, { dur: 2.0, vol: 0.2, voiced: 1, f: (u, t) => f(u, t) * 0.5, a: env(0.3, 1), form: [[500, 450, 5, 1], [900, 850, 6, 1.4]], rev: 1 }));
+  },
+  tyrant_roar: o => { beastRoar(o, 1); noise(1.6, 0.32, at(o, 0, { type: 'lowpass', f0: 900, f1: 200, attack: 0.1 })); grains(o, 0.1, 1.5, 22, 2500, 5500, 0.08, 0.015, 1, 'highpass'); },
+  warden_death: o => SFX.warden_roar({ ...o, pitch: 0.8 }),
+  lich_death: o => SFX.lich_roar({ ...o, pitch: 0.75 }),
+  tyrant_death: o => { beastRoar(o, 1.6); noise(2.4, 0.3, at(o, 0, { type: 'lowpass', f0: 800, f1: 120, attack: 0.1 })); grains(o, 0.2, 2.6, 40, 250, 2200, 0.15, 0.05, 1.5); },
+});
+// positional creature sound: distance falloff, stereo pan and air absorption applied to one submix.
+// prio 0 is idle chatter, dropped first when many creatures call at once. Returns false if nothing played.
+function voiceAt(name, x, y, z, o = {}) {
+  const fn = SFX[name];
+  if (!AU.on || !fn) return false;
+  const ctx = AU.ctx, now = ctx.currentTime;
+  AU.vq = (AU.vq || []).filter(t => now - t < 1);
+  if (AU.vq.length >= (o.prio === 0 ? 4 : 12)) return false;
+  if (o.global) { AU.vq.push(now); fn(Object.assign({}, o, { bus: AU.sfxBus })); return true; }
+  const dx = x - camera.position.x, dz = z - camera.position.z, d = Math.hypot(dx, dz, y - camera.position.y);
+  if (d > 70) return false;
+  AU.vq.push(now);
+  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 0.5; lp.frequency.value = 18000 / (1 + d / 16);
+  let n = lp;
+  if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(), yaw = camera.rotation.y, rx = dx * Math.cos(yaw) - dz * Math.sin(yaw); p.pan.value = clamp(rx / (d + 1), -0.9, 0.9); lp.connect(p); n = p; }
+  n.connect(AU.sfxBus);
+  fn(Object.assign({}, o, { gain: (o.gain || 1) / (1 + (d / 14) * (d / 14)), bus: lp }));
+  return true;
+}
 function sfx(name, o) { if (AU.on && SFX[name]) SFX[name](o || {}); }
 function sfxAt(name, x, y, z) {
   if (!AU.on) return;
@@ -2768,6 +2988,8 @@ class Enemy {
     this.stuckT = 0; this.prog = null; this.detourT = 0; this.detours = 0; this.detourD = 0; this.calmT = 0;
     // how far below the waterline this creature floats when the water is deeper than that
     this.swimD = clamp(this.h * 0.55, 0.4, 1.25);
+    // voice: bigger and elite creatures sound deeper; every creature is a little different
+    this.vp = rand(0.92, 1.08) / Math.sqrt(this.scaleK); this.vT = rand(2, 8); this.hurtT = 0; this.stepN = 0;
     this.yaw = rand(TAU); this.kx = 0; this.kz = 0;
     this.state = 'spawn'; this.t = 0; this.cd = rand(0.4, 1.2); this.atk = 0; this.lunge = 0; this.walk = rand(TAU); this.animSpeed = 0;
     this.flash = 0; this.burn = 0; this.burnDps = 0; this.burnTick = 0; this.chill = 0; this.barT = 0; this.seed = rand(100); this.strafe = Math.random() < 0.5 ? 1 : -1; this.strafeT = rand(2, 4);
@@ -2795,6 +3017,8 @@ class Enemy {
   setState(s) { this.state = s; this.t = 0; }
   faceTo(yaw, dt, k) { this.yaw += angDiff(this.yaw, yaw) * Math.min(1, k * dt); }
   centerY() { return this.def.fly ? this.pos.y : this.pos.y + this.h * 0.55; }
+  // play this creature's own sound for an event (alert, chase, idle, windup, strike, shoot, slam, hurt, death, step, roar)
+  say(ev, o) { return voiceAt(this.type + '_' + ev, this.pos.x, this.centerY(), this.pos.z, Object.assign({ pitch: this.vp }, o)); }
   update(dt) {
     const u = this.mat.userData.u;
     this.t += dt;
@@ -2817,6 +3041,11 @@ class Enemy {
     if (this.elite && Math.random() < dt * 9) { const e = ELEM[this.el]; PA.spawn(this.pos.x + rand(-this.r, this.r), this.pos.y + rand(0, this.h), this.pos.z + rand(-this.r, this.r), 0, rand(0.5, 1.6), 0, 0.8, 0.3, 0.03, e.c[0], e.c[1], e.c[2], e.c1[0], e.c1[1], e.c1[2], 0.8, 0, 0.5); }
     const dx = P.pos.x - this.pos.x, dz = P.pos.z - this.pos.z, dist = Math.hypot(dx, dz);
     this.dist = dist;
+    if (this.hurtT > 0) this.hurtT -= dt;
+    if (!this.dormant && (this.state === 'idle' || this.state === 'chase')) {
+      this.vT -= dt;
+      if (this.vT <= 0) { const ch = this.state === 'chase'; this.vT = ch ? rand(3.5, 7) : rand(7, 15); if (dist < (ch ? 40 : 28)) this.say(ch ? 'chase' : 'idle', { prio: 0 }); }
+    }
     this.think(dt, dx, dz, dist);
     if (this.state === 'gone') return;
     this.root.position.copy(this.pos); this.root.rotation.y = this.yaw;
@@ -2844,7 +3073,7 @@ class Enemy {
         }
         const wx = this.wx - this.pos.x, wz = this.wz - this.pos.z, wd = Math.hypot(wx, wz);
         if (wd > 0.8) { mx = wx / wd; mz = wz / wd; sp = this.speed * (this.calmT > 0 ? 0.5 : 0.28); td = wd; this.faceTo(Math.atan2(wx, wz), dt, 4); }
-        if (!P.dead && ((dist < def.aggro && this.calmT <= 0) || this.provoked)) { this.setState('chase'); if (dist < 40) sfxAt(def.flee ? 'pickup' : 'growl', this.pos.x, this.pos.y, this.pos.z); }
+        if (!P.dead && ((dist < def.aggro && this.calmT <= 0) || this.provoked)) { this.setState('chase'); if (dist < 40) { this.say('alert', { when: rand(0, 0.3) }); this.vT = rand(3, 6); } }
         break;
       }
       case 'chase': {
@@ -2975,16 +3204,15 @@ class Enemy {
     const def = this.def;
     if (def.slam) {
       const fx = this.pos.x + Math.sin(this.yaw) * 2.4, fz = this.pos.z + Math.cos(this.yaw) * 2.4, self = this;
-      sfxAt('windup', this.pos.x, this.pos.y, this.pos.z);
+      if (!this.say('windup')) sfxAt('windup', this.pos.x, this.pos.y, this.pos.z);
       telegraph(fx, fz, 4.8, def.windup, ELEM[this.el].light, (x, z, r) => {
         if (self.state === 'dead' || self.state === 'gone') return;
         const y = Math.max(heightAt(x, z), WATER_Y - 1.25);
         dust(x, y, z, 26, r * 0.7, 2.2); burst(x, y + 0.3, z, self.el, 24, 7, 0.6, 0.6, 6, 3);
-        sfxAt('slam', x, y, z); addShake(clamp(1 - self.dist / 30, 0, 1) * 0.6);
+        sfxAt('slam', x, y, z); self.say('slam'); addShake(clamp(1 - self.dist / 30, 0, 1) * 0.6);
         if (Math.hypot(P.pos.x - x, P.pos.z - z) < r + 0.3 && P.pos.y - y < 1.4) P.hurt(self.dmg, x, z, { knock: 9, up: 4.5, src: self });
       });
-    } else if (def.ranged) sfxAt('windup', this.pos.x, this.pos.y, this.pos.z);
-    else if (this.type === 'hound') sfxAt('growl', this.pos.x, this.pos.y, this.pos.z);
+    } else if (!this.say('windup') && def.ranged) sfxAt('windup', this.pos.x, this.pos.y, this.pos.z);
   }
   strike(dx, dz, dist) {
     const def = this.def, inv = 1 / (dist + 1e-4);
@@ -2994,16 +3222,16 @@ class Enemy {
       const oy = this.pos.y + this.h * 0.9, T = clamp(dist / 15, 0.55, 1.6), g = 18;
       const tx = P.pos.x + P.vel.x * 0.35, tz = P.pos.z + P.vel.z * 0.35, tyy = P.pos.y + 0.3;
       spawnProj({ x: this.pos.x, y: oy, z: this.pos.z, vx: (tx - this.pos.x) / T, vy: (tyy - oy) / T + 0.5 * g * T, vz: (tz - this.pos.z) / T, grav: g, owner: 'enemy', dmg: this.dmg, el: 'fire', r: 0.24, splash: 2.7, life: 4, fx: fxo, burn: true });
-      sfxAt('shoot', this.pos.x, oy, this.pos.z);
+      if (!this.say('shoot')) sfxAt('shoot', this.pos.x, oy, this.pos.z);
     } else if (def.ranged) {
       const sp = 16, lead = dist / sp * 0.55;
       _et.set(P.pos.x + P.vel.x * lead - this.pos.x, P.pos.y + 1.15 - this.pos.y, P.pos.z + P.vel.z * lead - this.pos.z).normalize();
       spawnProj({ x: this.pos.x + _et.x * 0.6, y: this.pos.y, z: this.pos.z + _et.z * 0.6, vx: _et.x * sp, vy: _et.y * sp, vz: _et.z * sp, owner: 'enemy', dmg: this.dmg, el: this.el, r: 0.26, life: 3.2, fx: fxo });
-      sfxAt('shoot', this.pos.x, this.pos.y, this.pos.z);
+      if (!this.say('shoot')) sfxAt('shoot', this.pos.x, this.pos.y, this.pos.z);
     } else {
       this.kx += dx * inv * 5; this.kz += dz * inv * 5;
       if (dist < def.range + 0.9 && Math.abs(P.pos.y - this.pos.y) < 2.6) P.hurt(this.dmg, this.pos.x, this.pos.z, Object.assign({ knock: this.type === 'hound' ? 3 : 5 }, fxo));
-      sfxAt('hit', this.pos.x, this.pos.y, this.pos.z);
+      if (!this.say('strike')) sfxAt('hit', this.pos.x, this.pos.y, this.pos.z);
     }
   }
   move(mx, mz, sp, dt) {
@@ -3033,6 +3261,7 @@ class Enemy {
     if (!this.def.id) collideCircle(_et, this.r * 0.8);
     const moved = Math.hypot(_et.x - this.pos.x, _et.z - this.pos.z) / Math.max(dt, 1e-4);
     this.animSpeed = damp(this.animSpeed, moved, 10, dt); this.walk += moved * dt * this.def.stride;
+    if (this.type === 'golem' && this.state !== 'dead') { const st = Math.floor(this.walk / Math.PI); if (st !== this.stepN) { this.stepN = st; if (this.dist < 30) this.say('step', { prio: 0 }); } }
     this.pos.x = _et.x; this.pos.z = _et.z;
     const gh = Math.max(heightAt(this.pos.x, this.pos.z), WATER_Y - (swims ? this.swimD : 0.4));
     if (this.def.fly) this.pos.y = damp(this.pos.y, gh + this.def.fly + Math.sin(G.time * 2 + this.seed) * 0.3, 4, dt);
@@ -3052,6 +3281,7 @@ class Enemy {
     if (this.state === 'idle') this.setState('chase');
     if (S.leech > 0 && !o.dot) P.heal(amt * S.leech, true);
     if (this.hp <= 0) this.die();
+    else if (!o.dot && this.hurtT <= 0 && !this.def.id) { this.hurtT = rand(0.45, 0.8); this.say('hurt'); }
     return amt;
   }
   die() {
@@ -3060,7 +3290,7 @@ class Enemy {
     const cy = this.centerY();
     burst(this.pos.x, cy, this.pos.z, this.el, this.elite ? 50 : 24, 7, 0.6, 0.8, 4);
     smoke(this.pos.x, cy, this.pos.z, 6, this.r, 1.8, 1.2, 0.06);
-    sfxAt('kill', this.pos.x, cy, this.pos.z);
+    sfxAt('kill', this.pos.x, cy, this.pos.z); this.say('death', this.def.id ? { global: true } : undefined);
     flashLight(this.pos.x, cy, this.pos.z, ELEM[this.el].light, 3, 14, 0.4);
     G.stats.kills++;
     onEnemyKilled(this);
@@ -3088,7 +3318,7 @@ class Boss extends Enemy {
   }
   awaken() {
     this.dormant = false; this.rise = 0.001; this.pose = 'roar'; G.boss = this; this.root.visible = true;
-    showBoss(this); banner(this.def.name, this.def.sub); sfx('roar'); sfx('bell'); addShake(0.7);
+    showBoss(this); banner(this.def.name, this.def.sub); this.roar(); sfx('bell'); addShake(0.7);
     burst(this.pos.x, this.pos.y + this.h * 0.5, this.pos.z, this.el, 80, 12, 0.9, 1.2);
     this.thresholds = [0.66, 0.33]; this.enraged = false;
   }
@@ -3101,6 +3331,7 @@ class Boss extends Enemy {
     for (const e of G.enemies.slice()) if (e.minion) e.remove();
     for (const p of G.projectiles) if (p.owner === 'enemy') p.life = 0;
   }
+  roar() { if (!this.say('roar', { global: true })) sfx('roar'); }
   seq(steps, dur, pose) { this.script = steps.slice().sort((a, b) => a.at - b.at); this.scriptT = 0; this.scriptEnd = dur; this.pose = pose; }
   think(dt, dx, dz, dist) {
     const zn = this.zone, u = this.mat.userData.u;
@@ -3118,7 +3349,7 @@ class Boss extends Enemy {
     }
     u.uPulse.value = 1 + Math.sin(G.time * (this.enraged ? 9 : 3)) * (this.enraged ? 0.45 : 0.15);
     const slow = this.chill > 0 ? 0.8 : 1;
-    if (!this.enraged && this.hp < this.maxHp * 0.3) { this.enraged = true; banner(this.def.name.split(',')[0], 'is enraged'); sfx('roar'); addShake(0.6); }
+    if (!this.enraged && this.hp < this.maxHp * 0.3) { this.enraged = true; banner(this.def.name.split(',')[0], 'is enraged'); this.roar(); addShake(0.6); }
     if (this.script) {
       this.scriptT += dt * slow;
       while (this.script.length && this.script[0].at <= this.scriptT) this.script.shift().fn();
@@ -3184,7 +3415,7 @@ class Boss extends Enemy {
   }
   atkSummon() {
     const t = this.key === 'warden' ? ['hound', 3] : this.key === 'lich' ? ['wight', 2] : ['imp', 4];
-    this.seq([{ at: 0, fn: () => { sfx('roar'); addShake(0.4); } }, { at: 0.9, fn: () => this.summon(t[0], t[1]) }], 1.8, 'roar');
+    this.seq([{ at: 0, fn: () => { this.roar(); addShake(0.4); } }, { at: 0.9, fn: () => this.summon(t[0], t[1]) }], 1.8, 'roar');
   }
   // --- warden
   atk_slam() { this.seq([{ at: 0, fn: () => sfxAt('windup', this.pos.x, this.pos.y, this.pos.z) }, { at: 1.15, fn: () => this.wave(15, 38) }, { at: 1.75, fn: () => { if (this.hp < this.maxHp * 0.6) this.wave(19, 38); } }], 2.5, 'slam'); }
@@ -3225,13 +3456,13 @@ class Boss extends Enemy {
   }
   // --- tyrant
   atk_meteors() {
-    const steps = [{ at: 0, fn: () => { sfx('roar'); } }], n = this.enraged ? 12 : 8;
+    const steps = [{ at: 0, fn: () => { this.roar(); } }], n = this.enraged ? 12 : 8;
     for (let i = 0; i < n; i++) steps.push({ at: 0.4 + i * 0.27, fn: () => { const lead = rand(0, 0.8); this.hazard(P.pos.x + P.vel.x * lead + (i ? rand(-6, 6) : 0), P.pos.z + P.vel.z * lead + (i ? rand(-6, 6) : 0), 4.2, 1.25, 1.0, 'meteor'); } });
     this.seq(steps, 0.4 + n * 0.27 + 0.9, 'cast');
   }
   atk_wave() { this.seq([{ at: 0, fn: () => sfxAt('windup', this.pos.x, this.pos.y, this.pos.z) }, { at: 0.62, fn: () => this.wave(16, 44) }, { at: 1.62, fn: () => this.wave(20, 44) }, { at: 2.62, fn: () => this.wave(this.enraged ? 25 : 17, 44) }], 3.0, 'slam'); }
   atk_charge() {
-    this.seq([{ at: 0, fn: () => { sfx('roar'); const dx = P.pos.x - this.pos.x, dz = P.pos.z - this.pos.z, d = Math.hypot(dx, dz) + 1e-4; this.chx = dx / d; this.chz = dz / d; this.yaw = Math.atan2(dx, dz); for (let i = 1; i <= 4; i++) telegraph(this.pos.x + this.chx * i * 6.5, this.pos.z + this.chz * i * 6.5, 3.4, 0.9, this.def.lightHex, null); } },
+    this.seq([{ at: 0, fn: () => { this.roar(); const dx = P.pos.x - this.pos.x, dz = P.pos.z - this.pos.z, d = Math.hypot(dx, dz) + 1e-4; this.chx = dx / d; this.chz = dz / d; this.yaw = Math.atan2(dx, dz); for (let i = 1; i <= 4; i++) telegraph(this.pos.x + this.chx * i * 6.5, this.pos.z + this.chz * i * 6.5, 3.4, 0.9, this.def.lightHex, null); } },
     { at: 0.9, fn: () => { this.charging = true; this.chargeHit = false; addShake(0.5); } },
     { at: 1.75, fn: () => { this.charging = false; this.wave(18, 22, 0.8); } }], 2.6, 'charge');
   }
@@ -4829,7 +5060,7 @@ async function init(hot) {
   else $('title').hidden = false;
   requestAnimationFrame(frame);
 }
-window.wyrdmoor = { run: runFrame, IN, DIR, G, P, S, AU, ZONES, COL, SITES, isLava, biomeAt, WATER_Y, spawnEnemy, spawnGroup, ENC, startGame, heightAt, giveRelic, RELICS, gainXP, snapshot, setQuality, openPause, QUALITY, get camera() { return camera; }, get renderer() { return renderer; } };
+window.wyrdmoor = { run: runFrame, IN, DIR, G, P, S, AU, SFX, ZONES, COL, SITES, isLava, biomeAt, WATER_Y, spawnEnemy, spawnGroup, ENC, startGame, heightAt, giveRelic, RELICS, gainXP, snapshot, setQuality, openPause, QUALITY, get camera() { return camera; }, get renderer() { return renderer; } };
 const hotApi = window.claude && window.claude.hot;
 if (hotApi && hotApi.snapshot) { try { hotApi.snapshot(() => (G.running ? snapshot() : {})); } catch (e) { } }
 const boot = data => init(data || {}).catch(e => { console.error(e); $('loadmsg').textContent = 'Could not start: ' + e.message; });
