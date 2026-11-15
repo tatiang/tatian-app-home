@@ -1,0 +1,8 @@
+Emberblade embeds two typefaces, both licensed under the SIL Open Font License 1.1
+(https://openfontlicense.org):
+
+- Cinzel, by Natanael Gama (https://fonts.google.com/specimen/Cinzel)
+- Nunito, by Vernon Adams and contributors (https://fonts.google.com/specimen/Nunito)
+
+The fonts are embedded unmodified (Latin subset) as base64 data in index.html.
+The full license text is at https://openfontlicense.org/open-font-license-official-text/
