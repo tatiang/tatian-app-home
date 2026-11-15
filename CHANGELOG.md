@@ -1,5 +1,10 @@
 # Changelog
 
+Nov 15, 2026 — pending — Emberblade: a longer, harder adventure
+
+- Four new areas and four mini-bosses, new enemies, and a three-phase final boss (about twice the length).
+- Tougher enemies and a sturdier Sovereign.
+
 Nov 15, 2026 — pending — Emberblade playtest fixes
 
 - Item messages pause the game, hints match the device, smoother double jump, safer level-up choice, brighter caverns.
