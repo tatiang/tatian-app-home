@@ -1,5 +1,10 @@
 # Changelog
 
+Nov 15, 2026 — pending — Add Emberblade, a 2.5D action-adventure for iPhone, to the collection
+
+- Add a Games entry and serve the game from `emberblade/` on this site.
+- The page is one self-contained file with its engine and typefaces inline; it makes no network requests.
+
 Nov 12, 2026 — 11:21 PM PT — pending — Add Wyrdmoor, a first-person fantasy RPG, to the collection
 
 - Add a Games entry and serve the game from `wyrdmoor/` on this site.

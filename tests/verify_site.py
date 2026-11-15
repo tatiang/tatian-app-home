@@ -43,8 +43,15 @@ assert game.projects[0]['href'] == 'wyrdmoor/'
 assert game.categories == ['Games']
 assert 'target' not in game.projects[0]
 preserved_source = preserved_source.replace(game_cards[0], '')
-assert len(Page(source).projects) == 21
-assert '>21 projects</span>' in source
+ember_cards = re.findall(r'<article class="project " data-category="Games">(?:(?!</article>).)*project-title-22(?:(?!</article>).)*</article>\n', preserved_source)
+assert len(ember_cards) == 1
+ember = Page(ember_cards[0])
+assert ember.projects[0]['href'] == 'emberblade/'
+assert ember.categories == ['Games']
+assert 'target' not in ember.projects[0]
+preserved_source = preserved_source.replace(ember_cards[0], '')
+assert len(Page(source).projects) == 22
+assert '>22 projects</span>' in source
 new = Page(preserved_source)
 assert len(new.projects) == baseline['project_count']
 assert [link['href'] for link in new.projects] == baseline['project_links'], 'Project destinations changed'
@@ -82,7 +89,21 @@ for font in re.findall(r"url\('([^')]+)'\)", (game_dir/'fonts.css').read_text())
     assert (game_dir/font).is_file(), font
 assert (game_dir/'index.html').stat().st_size < 400_000
 assert (ROOT/'assets/project-wyrdmoor-v3.04.webp').stat().st_size < 120_000
+# Emberblade is one self-contained page: script, styles and fonts are inline.
+ember_dir = ROOT/'emberblade'
+ember_text = (ember_dir/'index.html').read_text()
+ember_page = Page(ember_text)
+assert len(ember_page.ids) == len(set(ember_page.ids)), 'Duplicate IDs in emberblade/index.html'
+for asset in ember_page.assets:
+    assert not urlsplit(asset).scheme and not asset.startswith('//'), asset
+    if not asset.startswith('data:'): assert (ember_dir/asset).resolve().is_file(), asset
+for remote in re.findall(r'''(?:src|href)=["'](https?:)?//''', ember_text):
+    raise AssertionError('Emberblade must not load remote resources')
+for name in ['manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','licenses/three-MIT.txt','licenses/FONTS.txt']:
+    assert (ember_dir/name).is_file(), name
+assert (ember_dir/'index.html').stat().st_size < 1_200_000
+assert (ROOT/'assets/project-emberblade-v3.05.webp').stat().st_size < 120_000
 story = (ROOT/'storytelling.html').read_text()
 assert 'https://www.youtube-nocookie.com/embed/i_mtjWgvwnU' in story
 assert 'https://youtu.be/i_mtjWgvwnU' in story
-print('PASS: 21 projects; Wyrdmoor game page self-hosted; private meal planner entry and Storytelling page verified; 18 project records/links/details preserved; reading archive unchanged; local assets, anchors, IDs, external-link safety and image budgets valid.')
+print('PASS: 22 projects; Wyrdmoor and Emberblade game pages self-hosted; private meal planner entry and Storytelling page verified; 18 project records/links/details preserved; reading archive unchanged; local assets, anchors, IDs, external-link safety and image budgets valid.')
