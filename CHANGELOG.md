@@ -1,5 +1,9 @@
 # Changelog
 
+Nov 15, 2026 — pending — Emberblade playtest fixes
+
+- Item messages pause the game, hints match the device, smoother double jump, safer level-up choice, brighter caverns.
+
 Nov 15, 2026 — pending — Add Emberblade, a 2.5D action-adventure for iPhone, to the collection
 
 - Add a Games entry and serve the game from `emberblade/` on this site.
